@@ -58,12 +58,16 @@ export default function AuthPage() {
     if (isLogin) {
       loginMutation.mutate(data);
     } else {
-      if (data.role === "student" && !data.name) {
-        toast({
-          title: "Name is required for students",
-          variant: "destructive",
-        });
-        return;
+      if (data.role === "student") {
+        if (!data.name) {
+          toast({
+            title: "Name is required for students",
+            variant: "destructive",
+          });
+          return;
+        }
+        // Use studentId as username for students
+        data.username = data.studentId;
       }
       registerMutation.mutate(data);
     }
@@ -106,10 +110,10 @@ export default function AuthPage() {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
                   <FormField
                     control={form.control}
-                    name={selectedRole === "student" ? "studentId" : "username"}
+                    name={isLogin ? "username" : (selectedRole === "student" ? "studentId" : "username")}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{selectedRole === "student" ? "Student ID" : "Username"}</FormLabel>
+                        <FormLabel>{isLogin ? (selectedRole === "student" ? "Student ID" : "Username") : (selectedRole === "student" ? "Student ID" : "Username")}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
