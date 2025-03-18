@@ -14,18 +14,20 @@ import { Redirect } from "wouter";
 import { Loader2, Trash, Edit, Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from 'react';
 
 export default function CompanyDashboard() {
   const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
+  const [selectedInternshipId, setSelectedInternshipId] = useState<number | null>(null);
 
   const { data: internships, isLoading: loadingInternships } = useQuery({
     queryKey: ["/api/internships/company"],
   });
 
   const { data: applications } = useQuery({
-    queryKey: [`/api/applications/internship/${internships?.[0]?.id}`],
-    enabled: !!internships?.[0]?.id,
+    queryKey: [`/api/applications/internship/${selectedInternshipId}`],
+    enabled: !!selectedInternshipId,
   });
 
   const createInternshipMutation = useMutation({
@@ -63,7 +65,7 @@ export default function CompanyDashboard() {
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/applications/company"] });
+      queryClient.invalidateQueries(["/api/applications/internship/" + selectedInternshipId]);
     },
   });
 
