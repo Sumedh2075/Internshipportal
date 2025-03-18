@@ -3,11 +3,11 @@ import { User, InsertUser, Internship, Application } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import { Database } from "better-sqlite3";
-import * as sqlite from "better-sqlite3";
+import Database from "better-sqlite3";
 
 const MemoryStore = createMemoryStore(session);
 
-const db = new sqlite("db.sqlite") as Database;
+const db = new Database("db.sqlite");
 
 // Initialize tables
 db.exec(`
