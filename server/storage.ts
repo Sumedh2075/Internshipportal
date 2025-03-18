@@ -20,7 +20,7 @@ export interface IStorage {
   updateApplicationStatus(id: number, status: "accepted" | "rejected"): Promise<Application>;
   
   updateUserPassword(id: number, hashedPassword: string): Promise<User>; // Added method signature
-
+  
   sessionStore: session.Store;
 }
 
@@ -64,7 +64,12 @@ export class MemStorage implements IStorage {
 
   async createInternship(data: Omit<Internship, "id">): Promise<Internship> {
     const id = this.currentInternshipId++;
-    const internship = { ...data, id };
+    const internship = { 
+      ...data,
+      id,
+      startDate: new Date(data.startDate),
+      endDate: new Date(data.endDate)
+    };
     this.internships.set(id, internship);
     return internship;
   }

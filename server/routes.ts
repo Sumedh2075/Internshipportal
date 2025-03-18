@@ -21,15 +21,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/internships", checkRole("company"), async (req, res) => {
-    const data = insertInternshipSchema.parse(req.body);
-    const internship = await storage.createInternship({
-      ...data,
-      companyId: req.user.id,
-    });
-    res.status(201).json(internship);
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const data = insertInternshipSchema.parse(req.body);
+      const internship = await storage.createInternship({
+        ...data,
+        companyId: req.user.id,
+      });
+      res.status(201).json(internship);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
   });
 
   app.get("/api/internships/company", checkRole("company"), async (req, res) => {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+
     const internships = await storage.getInternshipsByCompany(req.user.id);
     res.json(internships);
   });
@@ -59,7 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (status !== "accepted" && status !== "rejected") {
       return res.status(400).send("Invalid status");
     }
-    
+
     const application = await storage.updateApplicationStatus(parseInt(req.params.id), status);
     res.json(application);
   });

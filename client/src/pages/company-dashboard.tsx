@@ -12,9 +12,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertInternshipSchema } from "@shared/schema";
 import { Redirect } from "wouter";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CompanyDashboard() {
   const { user, logoutMutation } = useAuth();
+  const { toast } = useToast();
 
   const { data: internships, isLoading } = useQuery({
     queryKey: ["/api/internships/company"],
@@ -27,10 +29,17 @@ export default function CompanyDashboard() {
   const createInternshipMutation = useMutation({
     mutationFn: async (data: any) => {
       const res = await apiRequest("POST", "/api/internships", data);
-      return res.json();
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/internships/company"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to create internship",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 
