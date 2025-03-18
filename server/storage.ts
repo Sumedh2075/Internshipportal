@@ -19,6 +19,8 @@ export interface IStorage {
   getApplicationsByInternship(internshipId: number): Promise<Application[]>;
   updateApplicationStatus(id: number, status: "accepted" | "rejected"): Promise<Application>;
   
+  updateUserPassword(id: number, hashedPassword: string): Promise<User>; // Added method signature
+
   sessionStore: session.Store;
 }
 
@@ -112,6 +114,15 @@ export class MemStorage implements IStorage {
     const updated = { ...application, status };
     this.applications.set(id, updated);
     return updated;
+  }
+
+  async updateUserPassword(id: number, hashedPassword: string): Promise<User> { // Added method implementation
+    const user = this.users.get(id);
+    if (!user) throw new Error("User not found");
+
+    const updatedUser = { ...user, password: hashedPassword };
+    this.users.set(id, updatedUser);
+    return updatedUser;
   }
 }
 

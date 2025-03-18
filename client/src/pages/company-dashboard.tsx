@@ -41,7 +41,8 @@ export default function CompanyDashboard() {
       description: "",
       requirements: "",
       location: "",
-      deadline: new Date().toISOString().split("T")[0],
+      startDate: new Date().toISOString().split("T")[0],
+      endDate: new Date().toISOString().split("T")[0],
     },
   });
 
@@ -127,12 +128,42 @@ export default function CompanyDashboard() {
 
                     <FormField
                       control={form.control}
-                      name="deadline"
+                      name="startDate"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Deadline</FormLabel>
+                          <FormLabel>Start Date</FormLabel>
                           <FormControl>
-                            <Input type="date" {...field} />
+                            <Input
+                              type="date"
+                              {...field}
+                              onChange={(e) => {
+                                const date = new Date(e.target.value);
+                                field.onChange(date.toISOString());
+                              }}
+                              value={field.value?.split("T")[0] || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="endDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>End Date</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              {...field}
+                              onChange={(e) => {
+                                const date = new Date(e.target.value);
+                                field.onChange(date.toISOString());
+                              }}
+                              value={field.value?.split("T")[0] || ""}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -175,6 +206,11 @@ export default function CompanyDashboard() {
                         <p className="text-sm text-muted-foreground mt-2">
                           {internship.description}
                         </p>
+                        <div className="mt-2 space-y-1 text-sm">
+                          <p>Location: {internship.location}</p>
+                          <p>Start Date: {new Date(internship.startDate).toLocaleDateString()}</p>
+                          <p>End Date: {new Date(internship.endDate).toLocaleDateString()}</p>
+                        </div>
                       </CardContent>
                     </Card>
                   ))}

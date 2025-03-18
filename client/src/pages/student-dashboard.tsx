@@ -7,10 +7,16 @@ import { Redirect } from "wouter";
 import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { Dialog, DialogTrigger, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast"; // Fixed import path
 
 export default function StudentDashboard() {
   const { user, logoutMutation } = useAuth();
   const [search, setSearch] = useState("");
+  const [selectedInternship, setSelectedInternship] = useState<number | null>(null);
+  const [resumeUrl, setResumeUrl] = useState("");
+  const { toast } = useToast();
 
   const { data: internships, isLoading: loadingInternships } = useQuery({
     queryKey: ["/api/internships"],
@@ -21,8 +27,8 @@ export default function StudentDashboard() {
   });
 
   const applyMutation = useMutation({
-    mutationFn: async (internshipId: number) => {
-      const res = await apiRequest("POST", "/api/applications", { internshipId });
+    mutationFn: async (data: { internshipId: number; resumeUrl: string }) => {
+      const res = await apiRequest("POST", "/api/applications", data);
       return res.json();
     },
     onSuccess: () => {
@@ -33,6 +39,20 @@ export default function StudentDashboard() {
   if (!user || user.role !== "student") {
     return <Redirect to="/auth" />;
   }
+
+  const handleApply = (internshipId: number) => {
+    if (!resumeUrl) {
+      toast({
+        title: "Resume required",
+        description: "Please upload your resume before applying",
+        variant: "destructive",
+      });
+      return;
+    }
+    applyMutation.mutate({ internshipId, resumeUrl });
+    setSelectedInternship(null);
+    setResumeUrl("");
+  };
 
   const filteredInternships = internships?.filter((internship: any) =>
     internship.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -79,31 +99,62 @@ export default function StudentDashboard() {
                             <p className="text-sm text-muted-foreground mt-2">
                               {internship.description}
                             </p>
-                            <p className="text-sm mt-2">
-                              Location: {internship.location}
-                            </p>
-                            <p className="text-sm">
-                              Deadline:{" "}
-                              {new Date(internship.deadline).toLocaleDateString()}
-                            </p>
+                            <div className="mt-2 space-y-1 text-sm">
+                              <p>Location: {internship.location}</p>
+                              <p>Start: {new Date(internship.startDate).toLocaleDateString()}</p>
+                              <p>End: {new Date(internship.endDate).toLocaleDateString()}</p>
+                            </div>
                           </div>
-                          <Button
-                            size="sm"
-                            disabled={
-                              applyMutation.isPending ||
-                              applications?.some(
-                                (app: any) =>
-                                  app.internshipId === internship.id
-                              )
-                            }
-                            onClick={() => applyMutation.mutate(internship.id)}
-                          >
-                            {applications?.some(
-                              (app: any) => app.internshipId === internship.id
-                            )
-                              ? "Applied"
-                              : "Apply"}
-                          </Button>
+                          <Dialog open={selectedInternship === internship.id} onOpenChange={(open) => setSelectedInternship(open ? internship.id : null)}>
+                            <DialogTrigger asChild>
+                              <Button
+                                size="sm"
+                                disabled={
+                                  applyMutation.isPending ||
+                                  applications?.some(
+                                    (app: any) =>
+                                      app.internshipId === internship.id
+                                  )
+                                }
+                              >
+                                {applications?.some(
+                                  (app: any) => app.internshipId === internship.id
+                                )
+                                  ? "Applied"
+                                  : "Apply"}
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Apply for {internship.title}</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div>
+                                  <Label>Resume Link</Label>
+                                  <Input 
+                                    type="url" 
+                                    placeholder="Enter your resume URL"
+                                    value={resumeUrl}
+                                    onChange={(e) => setResumeUrl(e.target.value)}
+                                  />
+                                  <p className="text-sm text-muted-foreground mt-1">
+                                    Please provide a link to your resume (e.g., Google Drive, Dropbox)
+                                  </p>
+                                </div>
+                                <Button 
+                                  className="w-full" 
+                                  onClick={() => handleApply(internship.id)}
+                                  disabled={!resumeUrl || applyMutation.isPending}
+                                >
+                                  {applyMutation.isPending ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    "Submit Application"
+                                  )}
+                                </Button>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
                         </div>
                       </CardContent>
                     </Card>
@@ -134,8 +185,17 @@ export default function StudentDashboard() {
                           Status: {application.status}
                         </p>
                         <p className="text-sm">
-                          Applied:{" "}
-                          {new Date(application.appliedAt).toLocaleDateString()}
+                          Applied: {new Date(application.appliedAt).toLocaleDateString()}
+                        </p>
+                        <p className="text-sm">
+                          <a 
+                            href={application.resumeUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                          >
+                            View Resume
+                          </a>
                         </p>
                       </CardContent>
                     </Card>

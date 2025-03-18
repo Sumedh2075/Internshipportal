@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -7,7 +7,7 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   role: text("role", { enum: ["student", "company", "admin"] }).notNull(),
-  name: text("name").notNull(),
+  name: text("name"),  // Made optional
   email: text("email").notNull(),
 });
 
@@ -18,35 +18,42 @@ export const internships = pgTable("internships", {
   description: text("description").notNull(),
   requirements: text("requirements").notNull(),
   location: text("location").notNull(),
-  deadline: timestamp("deadline").notNull(),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
 });
 
 export const applications = pgTable("applications", {
   id: serial("id").primaryKey(),
   internshipId: integer("internship_id").notNull(),
   studentId: integer("student_id").notNull(),
+  resumeUrl: text("resume_url").notNull(),
   status: text("status", { enum: ["pending", "accepted", "rejected"] }).notNull(),
   appliedAt: timestamp("applied_at").notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-  role: true,
-  name: true,
-  email: true,
-});
+export const insertUserSchema = createInsertSchema(users)
+  .pick({
+    username: true,
+    password: true,
+    role: true,
+    email: true,
+  })
+  .extend({
+    name: z.string().optional(),
+  });
 
 export const insertInternshipSchema = createInsertSchema(internships).pick({
   title: true,
   description: true,
   requirements: true,
   location: true,
-  deadline: true,
+  startDate: true,
+  endDate: true,
 });
 
 export const insertApplicationSchema = createInsertSchema(applications).pick({
   internshipId: true,
+  resumeUrl: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
