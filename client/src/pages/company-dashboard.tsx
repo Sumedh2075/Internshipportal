@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -205,7 +204,7 @@ export default function CompanyDashboard() {
             <TabsTrigger value="internships">Internships</TabsTrigger>
             <TabsTrigger value="applications">Applications</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="internships">
             <Card>
               <CardHeader>

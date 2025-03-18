@@ -33,13 +33,14 @@ export const applications = pgTable("applications", {
 
 export const insertUserSchema = createInsertSchema(users)
   .pick({
-    username: true,
     password: true,
     role: true,
     email: true,
   })
   .extend({
     name: z.string().optional(),
+    username: z.string().optional(),
+    studentId: z.string().optional(),
   });
 
 export const insertInternshipSchema = createInsertSchema(internships)

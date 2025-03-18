@@ -36,6 +36,7 @@ export default function AuthPage() {
       role: "student",
       name: "",
       email: "",
+      studentId: ""
     },
   });
 
@@ -105,10 +106,10 @@ export default function AuthPage() {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
                   <FormField
                     control={form.control}
-                    name="username"
+                    name={selectedRole === "student" ? "studentId" : "username"}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel>{selectedRole === "student" ? "Student ID" : "Username"}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
