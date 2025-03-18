@@ -8,19 +8,19 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   createInternship(internship: Omit<Internship, "id">): Promise<Internship>;
   getInternships(): Promise<Internship[]>;
   getInternshipsByCompany(companyId: number): Promise<Internship[]>;
   getInternship(id: number): Promise<Internship | undefined>;
-  
+
   createApplication(application: Omit<Application, "id" | "appliedAt" | "status">): Promise<Application>;
   getApplicationsByStudent(studentId: number): Promise<Application[]>;
   getApplicationsByInternship(internshipId: number): Promise<Application[]>;
   updateApplicationStatus(id: number, status: "accepted" | "rejected"): Promise<Application>;
-  
-  updateUserPassword(id: number, hashedPassword: string): Promise<User>; // Added method signature
-  
+
+  updateUserPassword(id: number, hashedPassword: string): Promise<User>;
+
   sessionStore: session.Store;
 }
 
@@ -57,7 +57,11 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
-    const user = { ...insertUser, id };
+    const user = { 
+      ...insertUser,
+      id,
+      name: insertUser.name ?? null // Convert undefined to null if name is not provided
+    };
     this.users.set(id, user);
     return user;
   }
@@ -115,13 +119,13 @@ export class MemStorage implements IStorage {
   async updateApplicationStatus(id: number, status: "accepted" | "rejected"): Promise<Application> {
     const application = this.applications.get(id);
     if (!application) throw new Error("Application not found");
-    
+
     const updated = { ...application, status };
     this.applications.set(id, updated);
     return updated;
   }
 
-  async updateUserPassword(id: number, hashedPassword: string): Promise<User> { // Added method implementation
+  async updateUserPassword(id: number, hashedPassword: string): Promise<User> {
     const user = this.users.get(id);
     if (!user) throw new Error("User not found");
 

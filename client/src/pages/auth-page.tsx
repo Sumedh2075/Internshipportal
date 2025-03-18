@@ -10,7 +10,7 @@ import { insertUserSchema } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
 import { useState } from "react";
-import { Building2, GraduationCap, KeyRound } from "lucide-react";
+import { Building2, GraduationCap, KeyRound, Eye, EyeOff } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -21,6 +21,8 @@ export default function AuthPage() {
   const [showResetPassword, setShowResetPassword] = useState(false);
   const { toast } = useToast();
   const [selectedRole, setSelectedRole] = useState("student");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(
@@ -122,7 +124,21 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input type="password" {...field} />
+                          <div className="relative">
+                            <Input 
+                              type={showPassword ? "text" : "password"} 
+                              {...field} 
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-0 top-0 h-full px-3"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -233,7 +249,21 @@ export default function AuthPage() {
                                   <FormItem>
                                     <FormLabel>New Password</FormLabel>
                                     <FormControl>
-                                      <Input type="password" {...field} />
+                                      <div className="relative">
+                                        <Input 
+                                          type={showNewPassword ? "text" : "password"} 
+                                          {...field} 
+                                        />
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="icon"
+                                          className="absolute right-0 top-0 h-full px-3"
+                                          onClick={() => setShowNewPassword(!showNewPassword)}
+                                        >
+                                          {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                        </Button>
+                                      </div>
                                     </FormControl>
                                     <FormMessage />
                                   </FormItem>
