@@ -51,7 +51,13 @@ export default function CompanyDashboard() {
   }
 
   const onSubmit = (data: any) => {
-    createInternshipMutation.mutate(data);
+    // Convert string dates to ISO strings
+    const formattedData = {
+      ...data,
+      startDate: new Date(data.startDate).toISOString(),
+      endDate: new Date(data.endDate).toISOString(),
+    };
+    createInternshipMutation.mutate(formattedData);
   };
 
   return (

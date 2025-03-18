@@ -5,7 +5,7 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User as SelectUser, insertUserSchema } from "@shared/schema";
+import { insertUserSchema } from "@shared/schema";
 
 declare global {
   namespace Express {
@@ -65,6 +65,24 @@ export function setupAuth(app: Express) {
     }
   });
 
+  // Add reset password route before other auth routes
+  app.post("/api/reset-password", async (req, res, next) => {
+    try {
+      const { username, password } = req.body;
+      const user = await storage.getUserByUsername(username);
+
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+
+      const hashedPassword = await hashPassword(password);
+      const updatedUser = await storage.updateUserPassword(user.id, hashedPassword);
+      res.json({ message: "Password updated successfully" });
+    } catch (err) {
+      next(err);
+    }
+  });
+
   app.post("/api/register", async (req, res, next) => {
     try {
       const userData = insertUserSchema.parse(req.body);
@@ -102,22 +120,5 @@ export function setupAuth(app: Express) {
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     res.json(req.user);
-  });
-
-  // Add this route to handle password reset
-  app.post("/api/reset-password", async (req, res, next) => {
-    try {
-      const { username, password } = req.body;
-      const user = await storage.getUserByUsername(username);
-
-      if (!user) {
-        return res.status(404).send("User not found");
-      }
-
-      const updatedUser = await storage.updateUserPassword(user.id, await hashPassword(password));
-      res.json({ message: "Password updated successfully" });
-    } catch (err) {
-      next(err);
-    }
   });
 }

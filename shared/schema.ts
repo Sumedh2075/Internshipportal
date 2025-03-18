@@ -42,14 +42,17 @@ export const insertUserSchema = createInsertSchema(users)
     name: z.string().optional(),
   });
 
-export const insertInternshipSchema = createInsertSchema(internships).pick({
-  title: true,
-  description: true,
-  requirements: true,
-  location: true,
-  startDate: true,
-  endDate: true,
-});
+export const insertInternshipSchema = createInsertSchema(internships)
+  .pick({
+    title: true,
+    description: true,
+    requirements: true,
+    location: true,
+  })
+  .extend({
+    startDate: z.string().transform(val => new Date(val).toISOString()),
+    endDate: z.string().transform(val => new Date(val).toISOString()),
+  });
 
 export const insertApplicationSchema = createInsertSchema(applications).pick({
   internshipId: true,
