@@ -46,6 +46,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(internships);
   });
 
+  app.patch("/api/internships/:id", checkRole("company"), async (req, res) => {
+    if (!req.user) return res.sendStatus(401);
+    try {
+      const internship = await storage.updateInternship(parseInt(req.params.id), req.body);
+      res.json(internship);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/internships/:id", checkRole("company"), async (req, res) => {
+    if (!req.user) return res.sendStatus(401);
+    try {
+      await storage.deleteInternship(parseInt(req.params.id));
+      res.sendStatus(204);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Application routes
   app.post("/api/applications", checkRole("student"), async (req, res) => {
     const data = insertApplicationSchema.parse(req.body);

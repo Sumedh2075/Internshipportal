@@ -1,3 +1,4 @@
+
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -11,14 +12,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertInternshipSchema } from "@shared/schema";
 import { Redirect } from "wouter";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash, Edit, Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function CompanyDashboard() {
   const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
 
-  const { data: internships, isLoading } = useQuery({
+  const { data: internships, isLoading: loadingInternships } = useQuery({
     queryKey: ["/api/internships/company"],
   });
 
@@ -34,12 +36,34 @@ export default function CompanyDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/internships/company"] });
     },
-    onError: (error: Error) => {
-      toast({
-        title: "Failed to create internship",
-        description: error.message,
-        variant: "destructive",
-      });
+  });
+
+  const updateInternshipMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      const res = await apiRequest("PATCH", `/api/internships/${id}`, data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/internships/company"] });
+    },
+  });
+
+  const deleteInternshipMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("DELETE", `/api/internships/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/internships/company"] });
+    },
+  });
+
+  const updateApplicationMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const res = await apiRequest("PATCH", `/api/applications/${id}/status`, { status });
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/applications/company"] });
     },
   });
 
@@ -60,7 +84,6 @@ export default function CompanyDashboard() {
   }
 
   const onSubmit = (data: any) => {
-    // Convert string dates to ISO strings
     const formattedData = {
       ...data,
       startDate: new Date(data.startDate).toISOString(),
@@ -98,7 +121,6 @@ export default function CompanyDashboard() {
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="description"
@@ -112,7 +134,6 @@ export default function CompanyDashboard() {
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="requirements"
@@ -126,7 +147,6 @@ export default function CompanyDashboard() {
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="location"
@@ -140,7 +160,6 @@ export default function CompanyDashboard() {
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="startDate"
@@ -148,21 +167,12 @@ export default function CompanyDashboard() {
                         <FormItem>
                           <FormLabel>Start Date</FormLabel>
                           <FormControl>
-                            <Input
-                              type="date"
-                              {...field}
-                              onChange={(e) => {
-                                const date = new Date(e.target.value);
-                                field.onChange(date.toISOString());
-                              }}
-                              value={field.value?.split("T")[0] || ""}
-                            />
+                            <Input type="date" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="endDate"
@@ -170,27 +180,14 @@ export default function CompanyDashboard() {
                         <FormItem>
                           <FormLabel>End Date</FormLabel>
                           <FormControl>
-                            <Input
-                              type="date"
-                              {...field}
-                              onChange={(e) => {
-                                const date = new Date(e.target.value);
-                                field.onChange(date.toISOString());
-                              }}
-                              value={field.value?.split("T")[0] || ""}
-                            />
+                            <Input type="date" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-
-                    <Button type="submit" disabled={createInternshipMutation.isPending}>
-                      {createInternshipMutation.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        "Create Internship"
-                      )}
+                    <Button type="submit" className="w-full">
+                      Create Internship
                     </Button>
                   </form>
                 </Form>
@@ -202,81 +199,142 @@ export default function CompanyDashboard() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Internships</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="flex justify-center">
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                </div>
-              ) : (
+        <Tabs defaultValue="internships">
+          <TabsList>
+            <TabsTrigger value="internships">Internships</TabsTrigger>
+            <TabsTrigger value="applications">Applications</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="internships">
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Internships</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {loadingInternships ? (
+                  <div className="flex justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {internships?.map((internship: any) => (
+                      <Card key={internship.id}>
+                        <CardContent className="pt-6">
+                          <div className="flex justify-between">
+                            <div>
+                              <h3 className="font-semibold">{internship.title}</h3>
+                              <p className="text-sm text-muted-foreground mt-2">
+                                {internship.description}
+                              </p>
+                              <div className="mt-2 space-y-1 text-sm">
+                                <p>Location: {internship.location}</p>
+                                <p>Start: {new Date(internship.startDate).toLocaleDateString()}</p>
+                                <p>End: {new Date(internship.endDate).toLocaleDateString()}</p>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button size="icon" variant="outline">
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                  <DialogHeader>
+                                    <DialogTitle>Edit Internship</DialogTitle>
+                                  </DialogHeader>
+                                  <Form {...form}>
+                                    <form 
+                                      onSubmit={form.handleSubmit((data) => 
+                                        updateInternshipMutation.mutate({ id: internship.id, data })
+                                      )} 
+                                      className="space-y-4"
+                                    >
+                                      {/* Same form fields as create */}
+                                    </form>
+                                  </Form>
+                                </DialogContent>
+                              </Dialog>
+                              <Button 
+                                size="icon" 
+                                variant="destructive"
+                                onClick={() => deleteInternshipMutation.mutate(internship.id)}
+                              >
+                                <Trash className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="applications">
+            <Card>
+              <CardHeader>
+                <CardTitle>Received Applications</CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="space-y-4">
-                  {internships?.map((internship: any) => (
-                    <Card key={internship.id}>
+                  {applications?.map((application: any) => (
+                    <Card key={application.id}>
                       <CardContent className="pt-6">
-                        <h3 className="font-semibold">{internship.title}</h3>
-                        <p className="text-sm text-muted-foreground mt-2">
-                          {internship.description}
-                        </p>
-                        <div className="mt-2 space-y-1 text-sm">
-                          <p>Location: {internship.location}</p>
-                          <p>Start Date: {new Date(internship.startDate).toLocaleDateString()}</p>
-                          <p>End Date: {new Date(internship.endDate).toLocaleDateString()}</p>
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h3 className="font-semibold">Student ID: {application.studentId}</h3>
+                            <p className="text-sm">Status: {application.status}</p>
+                            <a 
+                              href={application.resumeUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-500 hover:underline"
+                            >
+                              View Resume
+                            </a>
+                          </div>
+                          {application.status === "pending" && (
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="default"
+                                onClick={() => 
+                                  updateApplicationMutation.mutate({ 
+                                    id: application.id, 
+                                    status: "accepted" 
+                                  })
+                                }
+                              >
+                                <Check className="h-4 w-4 mr-1" />
+                                Accept
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => 
+                                  updateApplicationMutation.mutate({ 
+                                    id: application.id, 
+                                    status: "rejected" 
+                                  })
+                                }
+                              >
+                                <X className="h-4 w-4 mr-1" />
+                                Reject
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
                   ))}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Applications</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {applications?.map((application: any) => (
-                <Card key={application.id}>
-                  <CardContent className="pt-6">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="font-semibold">Application #{application.id}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Status: {application.status}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          onClick={() =>
-                            // Handle accept/reject
-                            null
-                          }
-                        >
-                          Accept
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() =>
-                            // Handle reject
-                            null
-                          }
-                        >
-                          Reject
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
