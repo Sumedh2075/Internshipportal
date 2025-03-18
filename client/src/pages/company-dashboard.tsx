@@ -25,7 +25,8 @@ export default function CompanyDashboard() {
   });
 
   const { data: applications } = useQuery({
-    queryKey: ["/api/applications/company"],
+    queryKey: [`/api/applications/internship/${internships?.[0]?.id}`],
+    enabled: !!internships?.[0]?.id,
   });
 
   const createInternshipMutation = useMutation({
@@ -102,12 +103,12 @@ export default function CompanyDashboard() {
               <DialogTrigger asChild>
                 <Button>Post Internship</Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>Create New Internship</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
                     <FormField
                       control={form.control}
                       name="title"
