@@ -1,138 +1,131 @@
+
 import { User, InsertUser, Internship, Application } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import { Database } from "better-sqlite3";
+import * as sqlite from "better-sqlite3";
 
 const MemoryStore = createMemoryStore(session);
 
-export interface IStorage {
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+const db = new sqlite("db.sqlite") as Database;
 
-  createInternship(internship: Omit<Internship, "id">): Promise<Internship>;
-  getInternships(): Promise<Internship[]>;
-  getInternshipsByCompany(companyId: number): Promise<Internship[]>;
-  getInternship(id: number): Promise<Internship | undefined>;
+// Initialize tables
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE,
+    password TEXT,
+    role TEXT,
+    name TEXT
+  );
+  
+  CREATE TABLE IF NOT EXISTS internships (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    description TEXT,
+    requirements TEXT,
+    location TEXT,
+    companyId INTEGER,
+    startDate TEXT,
+    endDate TEXT
+  );
+  
+  CREATE TABLE IF NOT EXISTS applications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    internshipId INTEGER,
+    studentId INTEGER,
+    status TEXT DEFAULT 'pending',
+    resumeUrl TEXT,
+    appliedAt TEXT
+  );
+`);
 
-  createApplication(application: Omit<Application, "id" | "appliedAt" | "status">): Promise<Application>;
-  getApplicationsByStudent(studentId: number): Promise<Application[]>;
-  getApplicationsByInternship(internshipId: number): Promise<Application[]>;
-  updateApplicationStatus(id: number, status: "accepted" | "rejected"): Promise<Application>;
-
-  updateUserPassword(id: number, hashedPassword: string): Promise<User>;
-
-  sessionStore: session.Store;
-}
-
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private internships: Map<number, Internship>;
-  private applications: Map<number, Application>;
-  private currentUserId: number;
-  private currentInternshipId: number;
-  private currentApplicationId: number;
+export class SqliteStorage implements IStorage {
   readonly sessionStore: session.Store;
 
   constructor() {
-    this.users = new Map();
-    this.internships = new Map();
-    this.applications = new Map();
-    this.currentUserId = 1;
-    this.currentInternshipId = 1;
-    this.currentApplicationId = 1;
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
     });
   }
 
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    return db.prepare("SELECT * FROM users WHERE id = ?").get(id) as User | undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    return db.prepare("SELECT * FROM users WHERE username = ?").get(username) as User | undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user = { 
-      ...insertUser,
-      id,
-      name: insertUser.name ?? null // Convert undefined to null if name is not provided
-    };
-    this.users.set(id, user);
-    return user;
+    const result = db.prepare(
+      "INSERT INTO users (username, password, role, name) VALUES (?, ?, ?, ?) RETURNING *"
+    ).get(insertUser.username, insertUser.password, insertUser.role, insertUser.name ?? null) as User;
+    return result;
   }
 
   async createInternship(data: Omit<Internship, "id">): Promise<Internship> {
-    const id = this.currentInternshipId++;
-    const internship = { 
-      ...data,
-      id,
-      startDate: new Date(data.startDate),
-      endDate: new Date(data.endDate)
-    };
-    this.internships.set(id, internship);
-    return internship;
+    const result = db.prepare(
+      "INSERT INTO internships (title, description, requirements, location, companyId, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *"
+    ).get(data.title, data.description, data.requirements, data.location, data.companyId, data.startDate, data.endDate) as Internship;
+    return result;
   }
 
   async getInternships(): Promise<Internship[]> {
-    return Array.from(this.internships.values());
+    return db.prepare("SELECT * FROM internships").all() as Internship[];
   }
 
   async getInternshipsByCompany(companyId: number): Promise<Internship[]> {
-    return Array.from(this.internships.values()).filter(
-      (internship) => internship.companyId === companyId
-    );
+    return db.prepare("SELECT * FROM internships WHERE companyId = ?").all(companyId) as Internship[];
   }
 
   async getInternship(id: number): Promise<Internship | undefined> {
-    return this.internships.get(id);
+    return db.prepare("SELECT * FROM internships WHERE id = ?").get(id) as Internship | undefined;
   }
 
   async createApplication(data: Omit<Application, "id" | "appliedAt" | "status">): Promise<Application> {
-    const id = this.currentApplicationId++;
-    const application = {
-      ...data,
-      id,
-      status: "pending" as const,
-      appliedAt: new Date(),
-    };
-    this.applications.set(id, application);
-    return application;
+    const result = db.prepare(
+      "INSERT INTO applications (internshipId, studentId, resumeUrl, appliedAt, status) VALUES (?, ?, ?, datetime('now'), 'pending') RETURNING *"
+    ).get(data.internshipId, data.studentId, data.resumeUrl) as Application;
+    return result;
   }
 
   async getApplicationsByStudent(studentId: number): Promise<Application[]> {
-    return Array.from(this.applications.values()).filter(
-      (application) => application.studentId === studentId
-    );
+    return db.prepare("SELECT * FROM applications WHERE studentId = ?").all(studentId) as Application[];
   }
 
   async getApplicationsByInternship(internshipId: number): Promise<Application[]> {
-    return Array.from(this.applications.values()).filter(
-      (application) => application.internshipId === internshipId
-    );
+    return db.prepare("SELECT * FROM applications WHERE internshipId = ?").all(internshipId) as Application[];
   }
 
   async updateApplicationStatus(id: number, status: "accepted" | "rejected"): Promise<Application> {
-    const application = this.applications.get(id);
-    if (!application) throw new Error("Application not found");
-
-    const updated = { ...application, status };
-    this.applications.set(id, updated);
-    return updated;
+    const result = db.prepare(
+      "UPDATE applications SET status = ? WHERE id = ? RETURNING *"
+    ).get(status, id) as Application;
+    return result;
   }
 
   async updateUserPassword(id: number, hashedPassword: string): Promise<User> {
-    const user = this.users.get(id);
-    if (!user) throw new Error("User not found");
+    const result = db.prepare(
+      "UPDATE users SET password = ? WHERE id = ? RETURNING *"
+    ).get(hashedPassword, id) as User;
+    return result;
+  }
 
-    const updatedUser = { ...user, password: hashedPassword };
-    this.users.set(id, updatedUser);
-    return updatedUser;
+  async updateInternship(id: number, data: Partial<Omit<Internship, "id">>): Promise<Internship> {
+    const current = await this.getInternship(id);
+    if (!current) throw new Error("Internship not found");
+    
+    const updates = { ...current, ...data };
+    const result = db.prepare(
+      "UPDATE internships SET title = ?, description = ?, requirements = ?, location = ?, startDate = ?, endDate = ? WHERE id = ? RETURNING *"
+    ).get(updates.title, updates.description, updates.requirements, updates.location, updates.startDate, updates.endDate, id) as Internship;
+    return result;
+  }
+
+  async deleteInternship(id: number): Promise<void> {
+    db.prepare("DELETE FROM internships WHERE id = ?").run(id);
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new SqliteStorage();
