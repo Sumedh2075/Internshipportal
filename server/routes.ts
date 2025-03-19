@@ -47,6 +47,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       res.status(201).json(internship);
     } catch (error: any) {
+      console.error("Error creating internship:", error);
       res.status(400).json({ message: error.message });
     }
   });

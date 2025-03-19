@@ -52,12 +52,29 @@ export default function CompanyDashboard() {
 
   const createInternshipMutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await apiRequest("POST", "/api/internships", data);
-      return await res.json();
+      const formattedData = {
+        ...data,
+        startDate: new Date(data.startDate).toISOString(),
+        endDate: new Date(data.endDate).toISOString(),
+      };
+      const res = await apiRequest("POST", "/api/internships", formattedData);
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Failed to create internship");
+      }
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/internships/company"] });
-      setCreateOpen(false); 
+      setCreateOpen(false);
+      toast({ title: "Internship created successfully" });
+    },
+    onError: (error: Error) => {
+      toast({ 
+        title: "Failed to create internship", 
+        description: error.message,
+        variant: "destructive"
+      });
     },
   });
 
@@ -107,12 +124,7 @@ export default function CompanyDashboard() {
   }
 
   const onSubmit = (data: any) => {
-    const formattedData = {
-      ...data,
-      startDate: new Date(data.startDate).toISOString(),
-      endDate: new Date(data.endDate).toISOString(),
-    };
-    createInternshipMutation.mutate(formattedData);
+    createInternshipMutation.mutate(data);
   };
 
   return (
