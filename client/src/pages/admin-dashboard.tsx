@@ -8,7 +8,7 @@ import { Loader2, Users, Building2, FileText, Download, Trash, Edit } from "luci
 import { Redirect } from "wouter";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminDashboard() {
   const { user, logoutMutation } = useAuth();
