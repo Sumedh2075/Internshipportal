@@ -1,3 +1,41 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --font-sans: "Inter", sans-serif;
+  }
+  
+  * {
+    @apply transition-colors duration-100;
+  }
+
+  body {
+    @apply font-sans antialiased;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
