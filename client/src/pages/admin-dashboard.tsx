@@ -1,35 +1,87 @@
+
 import { useAuth } from "@/hooks/use-auth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/table";
-import { Loader2, Users, Building2, FileText } from "lucide-react";
+import { DataTable } from "@/components/ui/data-table";
+import { Loader2, Users, Building2, FileText, Download, Trash, Edit } from "lucide-react";
 import { Redirect } from "wouter";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function AdminDashboard() {
   const { user, logoutMutation } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   const { data: users, isLoading: loadingUsers } = useQuery({
-    queryKey: ["/api/users"],
+    queryKey: ["/api/admin/users"],
   });
 
-  const { data: internships, isLoading: loadingInternships } = useQuery({
-    queryKey: ["/api/internships"],
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: number) => {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete user");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({ title: "User deleted successfully" });
+    },
   });
+
+  const exportApplications = async () => {
+    const response = await fetch("/api/admin/applications/export");
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "applications.xlsx";
+    a.click();
+  };
 
   if (!user || user.role !== "admin") {
     return <Redirect to="/auth" />;
   }
+
+  const columns = [
+    { accessorKey: "id", header: "ID" },
+    { accessorKey: "username", header: "Username" },
+    { accessorKey: "email", header: "Email" },
+    { accessorKey: "role", header: "Role" },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <div className="flex gap-2">
+          <Button
+            variant="destructive"
+            size="icon"
+            onClick={() => deleteUserMutation.mutate(row.original.id)}
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <Button onClick={() => logoutMutation.mutate()}>Logout</Button>
+          <div className="flex gap-2">
+            <Button onClick={exportApplications}>
+              <Download className="h-4 w-4 mr-2" />
+              Export Applications
+            </Button>
+            <Button onClick={() => logoutMutation.mutate()}>Logout</Button>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -39,49 +91,30 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">
-                {loadingUsers ? <Loader2 className="h-6 w-6 animate-spin" /> : users?.length}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5" />
-                Companies
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">
                 {loadingUsers ? (
                   <Loader2 className="h-6 w-6 animate-spin" />
                 ) : (
-                  users?.filter((u: any) => u.role === "company").length
-                )}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Active Internships
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">
-                {loadingInternships ? (
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                ) : (
-                  internships?.length
+                  users?.length
                 )}
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Add more admin functionality as needed */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Users</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loadingUsers ? (
+              <div className="flex justify-center p-4">
+                <Loader2 className="h-6 w-6 animate-spin" />
+              </div>
+            ) : (
+              <DataTable columns={columns} data={users || []} />
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

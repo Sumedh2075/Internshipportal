@@ -96,6 +96,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(application);
   });
 
+  // Admin routes
+  app.get("/api/admin/users", checkRole("admin"), async (req, res) => {
+    const users = await storage.getAllUsers();
+    res.json(users);
+  });
+
+  app.delete("/api/admin/users/:id", checkRole("admin"), async (req, res) => {
+    await storage.deleteUser(parseInt(req.params.id));
+    res.sendStatus(204);
+  });
+
+  app.patch("/api/admin/users/:id", checkRole("admin"), async (req, res) => {
+    const user = await storage.updateUser(parseInt(req.params.id), req.body);
+    res.json(user);
+  });
+
+  app.get("/api/admin/applications/export", checkRole("admin"), async (req, res) => {
+    const applications = await storage.getAllApplications();
+    const xlsx = require('xlsx');
+    
+    const workbook = xlsx.utils.book_new();
+    const worksheet = xlsx.utils.json_to_sheet(applications);
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'Applications');
+    
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=applications.xlsx');
+    
+    const buffer = xlsx.write(workbook, { type: 'buffer' });
+    res.send(buffer);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

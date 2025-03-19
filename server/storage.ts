@@ -1,8 +1,6 @@
-
 import { User, InsertUser, Internship, Application } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
-import { Database } from "better-sqlite3";
 import Database from "better-sqlite3";
 
 const MemoryStore = createMemoryStore(session);
@@ -18,7 +16,7 @@ db.exec(`
     role TEXT,
     name TEXT
   );
-  
+
   CREATE TABLE IF NOT EXISTS internships (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT,
@@ -29,7 +27,7 @@ db.exec(`
     startDate TEXT,
     endDate TEXT
   );
-  
+
   CREATE TABLE IF NOT EXISTS applications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     internshipId INTEGER,
@@ -115,7 +113,7 @@ export class SqliteStorage implements IStorage {
   async updateInternship(id: number, data: Partial<Omit<Internship, "id">>): Promise<Internship> {
     const current = await this.getInternship(id);
     if (!current) throw new Error("Internship not found");
-    
+
     const updates = { ...current, ...data };
     const result = db.prepare(
       "UPDATE internships SET title = ?, description = ?, requirements = ?, location = ?, startDate = ?, endDate = ? WHERE id = ? RETURNING *"
@@ -125,6 +123,24 @@ export class SqliteStorage implements IStorage {
 
   async deleteInternship(id: number): Promise<void> {
     db.prepare("DELETE FROM internships WHERE id = ?").run(id);
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return db.prepare("SELECT * FROM users").all() as User[];
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    db.prepare("DELETE FROM users WHERE id = ?").run(id);
+  }
+
+  async updateUser(id: number, data: Partial<User>): Promise<User | undefined> {
+      const result = db.prepare("UPDATE users SET name = COALESCE(?, name), role = COALESCE(?, role) WHERE id = ? RETURNING *").get(data.name, data.role, id) as User | undefined;
+      return result;
+  }
+
+
+  async getAllApplications(): Promise<Application[]> {
+    return db.prepare("SELECT * FROM applications").all() as Application[];
   }
 }
 
