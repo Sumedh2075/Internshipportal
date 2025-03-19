@@ -268,7 +268,7 @@ export default function CompanyDashboard() {
                                       onSubmit={form.handleSubmit(async (data) => {
                                         await updateInternshipMutation.mutate({
                                           id: internship.id,
-                                          ...data,
+                                          data: data
                                         });
                                         setEditOpen(null);
                                       })} 
