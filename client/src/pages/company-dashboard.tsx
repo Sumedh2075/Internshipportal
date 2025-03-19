@@ -20,6 +20,9 @@ export default function CompanyDashboard() {
   const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
   const [selectedInternshipId, setSelectedInternshipId] = useState<number | null>(null);
+  const [createOpen, setCreateOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState<number | null>(null)
+  const [activeTab, setActiveTab] = useState<"internships" | "applications">("internships")
 
   const { data: internships, isLoading: loadingInternships } = useQuery({
     queryKey: ["/api/internships/company"],
@@ -37,6 +40,7 @@ export default function CompanyDashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/internships/company"] });
+      setCreateOpen(false); // Close the dialog after successful creation
     },
   });
 
@@ -100,9 +104,9 @@ export default function CompanyDashboard() {
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Company Dashboard</h1>
           <div className="flex gap-4">
-            <Dialog>
+            <Dialog open={createOpen} onClose={() => setCreateOpen(false)}>
               <DialogTrigger asChild>
-                <Button>Post Internship</Button>
+                <Button onClick={() => setCreateOpen(true)}>Post Internship</Button>
               </DialogTrigger>
               <DialogContent className="max-w-md">
                 <DialogHeader>
@@ -235,7 +239,7 @@ export default function CompanyDashboard() {
                               </div>
                             </div>
                             <div className="flex gap-2">
-                              <Dialog>
+                              <Dialog open={editOpen === internship.id} onClose={() => setEditOpen(null)}>
                                 <DialogTrigger asChild>
                                   <Button 
                                     size="icon" 
@@ -249,6 +253,7 @@ export default function CompanyDashboard() {
                                         startDate: internship.startDate.split('T')[0],
                                         endDate: internship.endDate.split('T')[0],
                                       });
+                                      setEditOpen(internship.id);
                                     }}
                                   >
                                     <Edit className="h-4 w-4" />
@@ -260,9 +265,13 @@ export default function CompanyDashboard() {
                                   </DialogHeader>
                                   <Form {...form}>
                                     <form 
-                                      onSubmit={form.handleSubmit((data) => 
-                                        updateInternshipMutation.mutate({ id: internship.id, data })
-                                      )} 
+                                      onSubmit={form.handleSubmit(async (data) => {
+                                        await updateInternshipMutation.mutate({
+                                          id: internship.id,
+                                          ...data,
+                                        });
+                                        setEditOpen(null);
+                                      })} 
                                       className="space-y-4"
                                     >
                                       <FormField
