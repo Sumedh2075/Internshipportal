@@ -185,11 +185,11 @@ export default function AdminDashboard() {
     <>
       <div className="min-h-screen bg-background p-4 sm:p-6">
         <div className="max-w-7xl mx-auto space-y-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
+                <Button variant="outline">
                   <Menu className="h-4 w-4 mr-2" />
                   Menu
                 </Button>
