@@ -164,7 +164,6 @@ export default function AdminDashboard() {
     { accessorKey: "id", header: "ID" },
     { accessorKey: "username", header: "Username" },
     { accessorKey: "email", header: "Email" },
-    { accessorKey: "role", header: "Role" },
     {
       id: "actions",
       cell: ({ row }: { row: { original: User } }) => (
