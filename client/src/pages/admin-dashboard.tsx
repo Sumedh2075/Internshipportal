@@ -1,21 +1,25 @@
-
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { Loader2, Users, Building2, FileText, Download, Trash, Edit } from "lucide-react";
+import { Loader2, Users, Download, Trash } from "lucide-react";
 import { Redirect } from "wouter";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+}
 
 export default function AdminDashboard() {
   const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
-  const { data: users, isLoading: loadingUsers } = useQuery({
+
+  const { data: users = [], isLoading: loadingUsers } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
   });
 
@@ -53,7 +57,7 @@ export default function AdminDashboard() {
     { accessorKey: "role", header: "Role" },
     {
       id: "actions",
-      cell: ({ row }) => (
+      cell: ({ row }: { row: { original: User } }) => (
         <div className="flex gap-2">
           <Button
             variant="destructive"
@@ -94,7 +98,7 @@ export default function AdminDashboard() {
                 {loadingUsers ? (
                   <Loader2 className="h-6 w-6 animate-spin" />
                 ) : (
-                  users?.length
+                  users.length
                 )}
               </p>
             </CardContent>
@@ -111,7 +115,7 @@ export default function AdminDashboard() {
                 <Loader2 className="h-6 w-6 animate-spin" />
               </div>
             ) : (
-              <DataTable columns={columns} data={users || []} />
+              <DataTable columns={columns} data={users} />
             )}
           </CardContent>
         </Card>

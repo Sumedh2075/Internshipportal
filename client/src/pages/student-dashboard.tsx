@@ -9,7 +9,24 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Dialog, DialogTrigger, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast"; // Fixed import path
+import { useToast } from "@/hooks/use-toast";
+
+interface Internship {
+  id: number;
+  title: string;
+  description: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+}
+
+interface Application {
+  id: number;
+  internshipId: number;
+  status: string;
+  appliedAt: string;
+  resumeUrl: string;
+}
 
 export default function StudentDashboard() {
   const { user, logoutMutation } = useAuth();
@@ -18,11 +35,11 @@ export default function StudentDashboard() {
   const [resumeUrl, setResumeUrl] = useState("");
   const { toast } = useToast();
 
-  const { data: internships, isLoading: loadingInternships } = useQuery({
+  const { data: internships = [], isLoading: loadingInternships } = useQuery<Internship[]>({
     queryKey: ["/api/internships"],
   });
 
-  const { data: applications, isLoading: loadingApplications } = useQuery({
+  const { data: applications = [], isLoading: loadingApplications } = useQuery<Application[]>({
     queryKey: ["/api/applications/student"],
   });
 
@@ -54,7 +71,7 @@ export default function StudentDashboard() {
     setResumeUrl("");
   };
 
-  const filteredInternships = internships?.filter((internship: any) =>
+  const filteredInternships = internships.filter((internship) =>
     internship.title.toLowerCase().includes(search.toLowerCase()) ||
     internship.description.toLowerCase().includes(search.toLowerCase())
   );
@@ -90,7 +107,7 @@ export default function StudentDashboard() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {filteredInternships?.map((internship: any) => (
+                  {filteredInternships.map((internship) => (
                     <Card key={internship.id}>
                       <CardContent className="pt-6">
                         <div className="flex justify-between items-start">
@@ -111,14 +128,13 @@ export default function StudentDashboard() {
                                 size="sm"
                                 disabled={
                                   applyMutation.isPending ||
-                                  applications?.some(
-                                    (app: any) =>
-                                      app.internshipId === internship.id
+                                  applications.some(
+                                    (app) => app.internshipId === internship.id
                                   )
                                 }
                               >
-                                {applications?.some(
-                                  (app: any) => app.internshipId === internship.id
+                                {applications.some(
+                                  (app) => app.internshipId === internship.id
                                 )
                                   ? "Applied"
                                   : "Apply"}
@@ -131,8 +147,8 @@ export default function StudentDashboard() {
                               <div className="space-y-4">
                                 <div>
                                   <Label>Resume Link</Label>
-                                  <Input 
-                                    type="url" 
+                                  <Input
+                                    type="url"
                                     placeholder="Enter your resume URL"
                                     value={resumeUrl}
                                     onChange={(e) => setResumeUrl(e.target.value)}
@@ -141,8 +157,8 @@ export default function StudentDashboard() {
                                     Please provide a link to your resume (e.g., Google Drive, Dropbox)
                                   </p>
                                 </div>
-                                <Button 
-                                  className="w-full" 
+                                <Button
+                                  className="w-full"
                                   onClick={() => handleApply(internship.id)}
                                   disabled={!resumeUrl || applyMutation.isPending}
                                 >
@@ -175,7 +191,7 @@ export default function StudentDashboard() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {applications?.map((application: any) => (
+                  {applications.map((application) => (
                     <Card key={application.id}>
                       <CardContent className="pt-6">
                         <h3 className="font-semibold">
@@ -188,9 +204,9 @@ export default function StudentDashboard() {
                           Applied: {new Date(application.appliedAt).toLocaleDateString()}
                         </p>
                         <p className="text-sm">
-                          <a 
-                            href={application.resumeUrl} 
-                            target="_blank" 
+                          <a
+                            href={application.resumeUrl}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary hover:underline"
                           >

@@ -16,19 +16,36 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from 'react';
 
+interface Internship {
+  id: number;
+  title: string;
+  description: string;
+  location: string;
+  requirements: string;
+  startDate: string;
+  endDate: string;
+}
+
+interface Application {
+  id: number;
+  studentId: string;
+  status: string;
+  resumeUrl: string;
+}
+
 export default function CompanyDashboard() {
   const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
   const [selectedInternshipId, setSelectedInternshipId] = useState<number | null>(null);
-  const [createOpen, setCreateOpen] = useState(false)
-  const [editOpen, setEditOpen] = useState<number | null>(null)
-  const [activeTab, setActiveTab] = useState<"internships" | "applications">("internships")
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<"internships" | "applications">("internships");
 
-  const { data: internships, isLoading: loadingInternships } = useQuery({
+  const { data: internships = [], isLoading: loadingInternships } = useQuery<Internship[]>({
     queryKey: ["/api/internships/company"],
   });
 
-  const { data: applications } = useQuery({
+  const { data: applications = [] } = useQuery<Application[]>({
     queryKey: [`/api/applications/internship/${selectedInternshipId}`],
     enabled: !!selectedInternshipId,
   });
@@ -40,7 +57,7 @@ export default function CompanyDashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/internships/company"] });
-      setCreateOpen(false); // Close the dialog after successful creation
+      setCreateOpen(false); 
     },
   });
 
@@ -104,7 +121,7 @@ export default function CompanyDashboard() {
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Company Dashboard</h1>
           <div className="flex gap-4">
-            <Dialog open={createOpen} onClose={() => setCreateOpen(false)}>
+            <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
                 <Button onClick={() => setCreateOpen(true)}>Post Internship</Button>
               </DialogTrigger>
@@ -223,7 +240,7 @@ export default function CompanyDashboard() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {internships?.map((internship: any) => (
+                    {internships?.map((internship: Internship) => (
                       <Card key={internship.id}>
                         <CardContent className="pt-6">
                           <div className="flex justify-between">
@@ -239,10 +256,10 @@ export default function CompanyDashboard() {
                               </div>
                             </div>
                             <div className="flex gap-2">
-                              <Dialog open={editOpen === internship.id} onClose={() => setEditOpen(null)}>
+                              <Dialog open={editOpen === internship.id} onOpenChange={(open) => setEditOpen(open ? internship.id : null)}>
                                 <DialogTrigger asChild>
-                                  <Button 
-                                    size="icon" 
+                                  <Button
+                                    size="icon"
                                     variant="outline"
                                     onClick={() => {
                                       form.reset({
@@ -264,14 +281,14 @@ export default function CompanyDashboard() {
                                     <DialogTitle>Edit Internship</DialogTitle>
                                   </DialogHeader>
                                   <Form {...form}>
-                                    <form 
+                                    <form
                                       onSubmit={form.handleSubmit(async (data) => {
                                         await updateInternshipMutation.mutate({
                                           id: internship.id,
                                           data: data
                                         });
                                         setEditOpen(null);
-                                      })} 
+                                      })}
                                       className="space-y-4"
                                     >
                                       <FormField
@@ -283,6 +300,7 @@ export default function CompanyDashboard() {
                                             <FormControl>
                                               <Input {...field} />
                                             </FormControl>
+                                            <FormMessage />
                                           </FormItem>
                                         )}
                                       />
@@ -295,6 +313,7 @@ export default function CompanyDashboard() {
                                             <FormControl>
                                               <Textarea {...field} />
                                             </FormControl>
+                                            <FormMessage />
                                           </FormItem>
                                         )}
                                       />
@@ -307,6 +326,7 @@ export default function CompanyDashboard() {
                                             <FormControl>
                                               <Input {...field} />
                                             </FormControl>
+                                            <FormMessage />
                                           </FormItem>
                                         )}
                                       />
@@ -319,6 +339,7 @@ export default function CompanyDashboard() {
                                             <FormControl>
                                               <Input {...field} />
                                             </FormControl>
+                                            <FormMessage />
                                           </FormItem>
                                         )}
                                       />
@@ -331,6 +352,7 @@ export default function CompanyDashboard() {
                                             <FormControl>
                                               <Input type="date" {...field} />
                                             </FormControl>
+                                            <FormMessage />
                                           </FormItem>
                                         )}
                                       />
@@ -343,6 +365,7 @@ export default function CompanyDashboard() {
                                             <FormControl>
                                               <Input type="date" {...field} />
                                             </FormControl>
+                                            <FormMessage />
                                           </FormItem>
                                         )}
                                       />
@@ -353,8 +376,8 @@ export default function CompanyDashboard() {
                                   </Form>
                                 </DialogContent>
                               </Dialog>
-                              <Button 
-                                size="icon" 
+                              <Button
+                                size="icon"
                                 variant="destructive"
                                 onClick={() => deleteInternshipMutation.mutate(internship.id)}
                               >
@@ -373,20 +396,20 @@ export default function CompanyDashboard() {
 
           <TabsContent value="applications" className="space-y-4">
             <div className="mb-4">
-              <select 
+              <select
                 className="w-full p-2 border rounded"
                 onChange={(e) => setSelectedInternshipId(Number(e.target.value))}
                 value={selectedInternshipId || ''}
               >
                 <option value="">Select an internship to view applications</option>
-                {internships?.map((internship: any) => (
+                {internships?.map((internship: Internship) => (
                   <option key={internship.id} value={internship.id}>
                     {internship.title}
                   </option>
                 ))}
               </select>
             </div>
-            {applications?.map((application: any) => (
+            {applications?.map((application: Application) => (
               <Card key={application.id}>
                 <CardContent className="flex items-center justify-between p-4">
                   <div>

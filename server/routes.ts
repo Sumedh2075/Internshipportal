@@ -4,6 +4,18 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertInternshipSchema, insertApplicationSchema } from "@shared/schema";
 
+interface AuthenticatedUser {
+  id: number;
+  role: string;
+  username: string;
+}
+
+declare global {
+  namespace Express {
+    interface User extends AuthenticatedUser {}
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
@@ -30,6 +42,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const internship = await storage.createInternship({
         ...data,
         companyId: req.user.id,
+        startDate: new Date(data.startDate),
+        endDate: new Date(data.endDate),
       });
       res.status(201).json(internship);
     } catch (error: any) {
@@ -115,14 +129,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/applications/export", checkRole("admin"), async (req, res) => {
     const applications = await storage.getAllApplications();
     const xlsx = require('xlsx');
-    
+
     const workbook = xlsx.utils.book_new();
     const worksheet = xlsx.utils.json_to_sheet(applications);
     xlsx.utils.book_append_sheet(workbook, worksheet, 'Applications');
-    
+
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename=applications.xlsx');
-    
+
     const buffer = xlsx.write(workbook, { type: 'buffer' });
     res.send(buffer);
   });
