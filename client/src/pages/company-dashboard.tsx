@@ -40,6 +40,18 @@ export default function CompanyDashboard() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<"internships" | "applications">("internships");
+  const [createInternshipForm] = useForm({
+    resolver: zodResolver(insertInternshipSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      requirements: "",
+      location: "",
+      startDate: new Date().toISOString().split("T")[0],
+      endDate: new Date().toISOString().split("T")[0],
+    },
+  });
+
 
   const { data: internships = [], isLoading: loadingInternships } = useQuery<Internship[]>({
     queryKey: ["/api/internships/company"],
@@ -52,21 +64,28 @@ export default function CompanyDashboard() {
 
   const createInternshipMutation = useMutation({
     mutationFn: async (data: any) => {
-      const formattedData = {
-        ...data,
-        startDate: new Date(data.startDate).toISOString(),
-        endDate: new Date(data.endDate).toISOString(),
-      };
-      const res = await apiRequest("POST", "/api/internships", formattedData);
-      if (!res.ok) {
-        const error = await res.json();
+      try {
+        // Format dates as YYYY-MM-DD strings
+        const formattedData = {
+          ...data,
+          startDate: data.startDate,
+          endDate: data.endDate,
+        };
+
+        const res = await apiRequest("POST", "/api/internships", formattedData);
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.message || "Failed to create internship");
+        }
+        return res.json();
+      } catch (error: any) {
         throw new Error(error.message || "Failed to create internship");
       }
-      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/internships/company"] });
       setCreateOpen(false);
+      createInternshipForm.reset();
       toast({ title: "Internship created successfully" });
     },
     onError: (error: Error) => {
@@ -141,10 +160,10 @@ export default function CompanyDashboard() {
                 <DialogHeader>
                   <DialogTitle>Create New Internship</DialogTitle>
                 </DialogHeader>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+                <Form {...createInternshipForm}>
+                  <form onSubmit={createInternshipForm.handleSubmit(onSubmit)} className="space-y-3">
                     <FormField
-                      control={form.control}
+                      control={createInternshipForm.control}
                       name="title"
                       render={({ field }) => (
                         <FormItem>
@@ -157,7 +176,7 @@ export default function CompanyDashboard() {
                       )}
                     />
                     <FormField
-                      control={form.control}
+                      control={createInternshipForm.control}
                       name="description"
                       render={({ field }) => (
                         <FormItem>
@@ -170,7 +189,7 @@ export default function CompanyDashboard() {
                       )}
                     />
                     <FormField
-                      control={form.control}
+                      control={createInternshipForm.control}
                       name="requirements"
                       render={({ field }) => (
                         <FormItem>
@@ -183,7 +202,7 @@ export default function CompanyDashboard() {
                       )}
                     />
                     <FormField
-                      control={form.control}
+                      control={createInternshipForm.control}
                       name="location"
                       render={({ field }) => (
                         <FormItem>
@@ -196,7 +215,7 @@ export default function CompanyDashboard() {
                       )}
                     />
                     <FormField
-                      control={form.control}
+                      control={createInternshipForm.control}
                       name="startDate"
                       render={({ field }) => (
                         <FormItem>
@@ -209,7 +228,7 @@ export default function CompanyDashboard() {
                       )}
                     />
                     <FormField
-                      control={form.control}
+                      control={createInternshipForm.control}
                       name="endDate"
                       render={({ field }) => (
                         <FormItem>

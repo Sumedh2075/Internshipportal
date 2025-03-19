@@ -39,11 +39,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const data = insertInternshipSchema.parse(req.body);
+      // Convert dates to ISO string format
       const internship = await storage.createInternship({
         ...data,
         companyId: req.user.id,
-        startDate: new Date(data.startDate),
-        endDate: new Date(data.endDate),
+        startDate: new Date(data.startDate).toISOString(),
+        endDate: new Date(data.endDate).toISOString(),
       });
       res.status(201).json(internship);
     } catch (error: any) {

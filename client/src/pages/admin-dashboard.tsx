@@ -23,7 +23,7 @@ interface User {
   id: number;
   username: string;
   email: string;
-  role: string;
+  // role: string;  Removed as per intention
 }
 
 interface Internship {
@@ -109,7 +109,7 @@ export default function AdminDashboard() {
       username: "",
       password: "",
       email: "",
-      role: "student",
+      // role: "student", Removed as per intention
       name: "",
     },
   });
@@ -403,28 +403,7 @@ export default function AdminDashboard() {
             </DialogHeader>
             <Form {...createAccountForm}>
               <form onSubmit={createAccountForm.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-4">
-                <FormField
-                  control={createAccountForm.control}
-                  name="role"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Role</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select role" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="student">Student</SelectItem>
-                          <SelectItem value="company">Company</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* Removed role field */}
                 <FormField
                   control={createAccountForm.control}
                   name="username"
