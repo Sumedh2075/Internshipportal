@@ -275,66 +275,40 @@ export default function CompanyDashboard() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="applications">
-            <Card>
-              <CardHeader>
-                <CardTitle>Received Applications</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {applications?.map((application: any) => (
-                    <Card key={application.id}>
-                      <CardContent className="pt-6">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <h3 className="font-semibold">Student ID: {application.studentId}</h3>
-                            <p className="text-sm">Status: {application.status}</p>
-                            <a 
-                              href={application.resumeUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-sm text-blue-500 hover:underline"
-                            >
-                              View Resume
-                            </a>
-                          </div>
-                          {application.status === "pending" && (
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                variant="default"
-                                onClick={() => 
-                                  updateApplicationMutation.mutate({ 
-                                    id: application.id, 
-                                    status: "accepted" 
-                                  })
-                                }
-                              >
-                                <Check className="h-4 w-4 mr-1" />
-                                Accept
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => 
-                                  updateApplicationMutation.mutate({ 
-                                    id: application.id, 
-                                    status: "rejected" 
-                                  })
-                                }
-                              >
-                                <X className="h-4 w-4 mr-1" />
-                                Reject
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="applications" className="space-y-4">
+            <div className="mb-4">
+              <select 
+                className="w-full p-2 border rounded"
+                onChange={(e) => setSelectedInternshipId(Number(e.target.value))}
+                value={selectedInternshipId || ''}
+              >
+                <option value="">Select an internship to view applications</option>
+                {internships?.map((internship: any) => (
+                  <option key={internship.id} value={internship.id}>
+                    {internship.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {applications?.map((application: any) => (
+              <Card key={application.id}>
+                <CardContent className="flex items-center justify-between p-4">
+                  <div>
+                    <h3 className="font-semibold">Student ID: {application.studentId}</h3>
+                    <p className="text-sm text-muted-foreground">Resume: <a href={application.resumeUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">View Resume</a></p>
+                    <p className="text-sm text-muted-foreground">Status: {application.status}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" className="w-24" onClick={() => updateApplicationMutation.mutate({ id: application.id, status: "accepted" })} disabled={application.status !== "pending"}>
+                      <Check className="h-4 w-4" />
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-24" onClick={() => updateApplicationMutation.mutate({ id: application.id, status: "rejected" })} disabled={application.status !== "pending"}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </TabsContent>
         </Tabs>
       </div>
