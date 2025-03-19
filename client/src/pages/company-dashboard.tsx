@@ -237,7 +237,20 @@ export default function CompanyDashboard() {
                             <div className="flex gap-2">
                               <Dialog>
                                 <DialogTrigger asChild>
-                                  <Button size="icon" variant="outline">
+                                  <Button 
+                                    size="icon" 
+                                    variant="outline"
+                                    onClick={() => {
+                                      form.reset({
+                                        title: internship.title,
+                                        description: internship.description,
+                                        requirements: internship.requirements,
+                                        location: internship.location,
+                                        startDate: internship.startDate.split('T')[0],
+                                        endDate: internship.endDate.split('T')[0],
+                                      });
+                                    }}
+                                  >
                                     <Edit className="h-4 w-4" />
                                   </Button>
                                 </DialogTrigger>
@@ -252,7 +265,81 @@ export default function CompanyDashboard() {
                                       )} 
                                       className="space-y-4"
                                     >
-                                      {/* Same form fields as create */}
+                                      <FormField
+                                        control={form.control}
+                                        name="title"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Title</FormLabel>
+                                            <FormControl>
+                                              <Input {...field} />
+                                            </FormControl>
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={form.control}
+                                        name="description"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Description</FormLabel>
+                                            <FormControl>
+                                              <Textarea {...field} />
+                                            </FormControl>
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={form.control}
+                                        name="requirements"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Requirements</FormLabel>
+                                            <FormControl>
+                                              <Input {...field} />
+                                            </FormControl>
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={form.control}
+                                        name="location"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Location</FormLabel>
+                                            <FormControl>
+                                              <Input {...field} />
+                                            </FormControl>
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={form.control}
+                                        name="startDate"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Start Date</FormLabel>
+                                            <FormControl>
+                                              <Input type="date" {...field} />
+                                            </FormControl>
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={form.control}
+                                        name="endDate"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>End Date</FormLabel>
+                                            <FormControl>
+                                              <Input type="date" {...field} />
+                                            </FormControl>
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <Button type="submit" className="w-full">
+                                        Save Changes
+                                      </Button>
                                     </form>
                                   </Form>
                                 </DialogContent>
