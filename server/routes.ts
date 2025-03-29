@@ -153,6 +153,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.send(buffer);
   });
 
+  // Admin internship management routes
+  app.delete("/api/admin/internships/:id", checkRole("admin"), async (req, res) => {
+    if (!req.user) return res.sendStatus(401);
+    try {
+      await storage.deleteInternship(parseInt(req.params.id));
+      res.sendStatus(204);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.patch("/api/admin/internships/:id", checkRole("admin"), async (req, res) => {
+    if (!req.user) return res.sendStatus(401);
+    try {
+      const data = req.body;
+      const internship = await storage.updateInternship(parseInt(req.params.id), data);
+      res.json(internship);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -13,7 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertInternshipSchema, insertUserSchema } from "@shared/schema";
-import { Loader2, Users, Download, Trash, Building2, GraduationCap, Briefcase, UserPlus, Plus, Menu } from "lucide-react";
+import { Loader2, Users, Download, Trash, Building2, GraduationCap, Briefcase, UserPlus, Plus, Menu, Pencil } from "lucide-react";
 import { Redirect } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -23,7 +23,7 @@ interface User {
   id: number;
   username: string;
   email: string;
-  // role: string;  Removed as per intention
+  role: string;
 }
 
 interface Internship {
@@ -76,10 +76,52 @@ export default function AdminDashboard() {
 
   const deleteInternshipMutation = useMutation({
     mutationFn: async (id: number) => {
-      await apiRequest("DELETE", `/api/internships/${id}`);
+      await apiRequest("DELETE", `/api/admin/internships/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/internships"] });
+      toast({ title: "Internship deleted successfully" });
+    },
+    onError: (error: Error) => {
+      toast({ 
+        title: "Failed to delete internship", 
+        description: error.message,
+        variant: "destructive" 
+      });
+    },
+  });
+  
+  const [editInternshipData, setEditInternshipData] = useState<Internship | null>(null);
+  const [isEditInternshipOpen, setIsEditInternshipOpen] = useState(false);
+  
+  const editInternshipForm = useForm({
+    resolver: zodResolver(insertInternshipSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      requirements: "",
+      location: "",
+      startDate: "",
+      endDate: "",
+    },
+  });
+  
+  const updateInternshipMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("PATCH", `/api/admin/internships/${editInternshipData?.id}`, data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/internships"] });
+      setIsEditInternshipOpen(false);
+      toast({ title: "Internship updated successfully" });
+    },
+    onError: (error: Error) => {
+      toast({ 
+        title: "Failed to update internship", 
+        description: error.message,
+        variant: "destructive" 
+      });
     },
   });
 
@@ -320,13 +362,33 @@ export default function AdminDashboard() {
                                     <p>End: {new Date(internship.endDate).toLocaleDateString()}</p>
                                   </div>
                                 </div>
-                                <Button
-                                  size="icon"
-                                  variant="destructive"
-                                  onClick={() => deleteInternshipMutation.mutate(internship.id)}
-                                >
-                                  <Trash className="h-4 w-4" />
-                                </Button>
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="icon"
+                                    variant="outline"
+                                    onClick={() => {
+                                      setEditInternshipData(internship);
+                                      editInternshipForm.reset({
+                                        title: internship.title,
+                                        description: internship.description,
+                                        requirements: internship.requirements,
+                                        location: internship.location,
+                                        startDate: internship.startDate,
+                                        endDate: internship.endDate,
+                                      });
+                                      setIsEditInternshipOpen(true);
+                                    }}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    size="icon"
+                                    variant="destructive"
+                                    onClick={() => deleteInternshipMutation.mutate(internship.id)}
+                                  >
+                                    <Trash className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </div>
                             </CardContent>
                           </Card>
@@ -539,6 +601,101 @@ export default function AdminDashboard() {
                   />
                 </div>
                 <Button type="submit" className="w-full">Create Internship</Button>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {isEditInternshipOpen && (
+        <Dialog open={isEditInternshipOpen} onOpenChange={setIsEditInternshipOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Internship</DialogTitle>
+            </DialogHeader>
+            <Form {...editInternshipForm}>
+              <form onSubmit={editInternshipForm.handleSubmit((data) => updateInternshipMutation.mutate(data))} className="space-y-4">
+                <FormField
+                  control={editInternshipForm.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editInternshipForm.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editInternshipForm.control}
+                  name="requirements"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Requirements</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editInternshipForm.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Location</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={editInternshipForm.control}
+                    name="startDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Start Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={editInternshipForm.control}
+                    name="endDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>End Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <Button type="submit" className="w-full">Update Internship</Button>
               </form>
             </Form>
           </DialogContent>
