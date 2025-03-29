@@ -288,82 +288,79 @@ export default function AdminDashboard() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            <Card className="aspect-square overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300 group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <Card className="aspect-square border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300">
               <CardHeader className="pb-0">
-                <CardTitle className="flex items-center gap-2 text-lg font-medium">
-                  <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                    <GraduationCap className="h-5 w-5 text-primary" />
+                <CardTitle className="flex items-center gap-2 text-md font-medium text-slate-700">
+                  <div className="p-2 rounded-lg bg-slate-100">
+                    <GraduationCap className="h-4 w-4 text-slate-600" />
                   </div>
                   Students
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center h-[calc(100%-5rem)]">
-                <p className="text-5xl font-bold bg-gradient-to-b from-primary to-primary/80 bg-clip-text text-transparent">
+                <p className="text-5xl font-semibold text-slate-800">
                   {studentUsers.length}
                 </p>
-                <p className="text-sm text-muted-foreground mt-2">Total registered students</p>
+                <p className="text-sm text-slate-500 mt-2">Total registered students</p>
               </CardContent>
             </Card>
 
-            <Card className="aspect-square overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300 group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <Card className="aspect-square border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300">
               <CardHeader className="pb-0">
-                <CardTitle className="flex items-center gap-2 text-lg font-medium">
-                  <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                    <Building2 className="h-5 w-5 text-primary" />
+                <CardTitle className="flex items-center gap-2 text-md font-medium text-slate-700">
+                  <div className="p-2 rounded-lg bg-slate-100">
+                    <Building2 className="h-4 w-4 text-slate-600" />
                   </div>
                   Companies
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center h-[calc(100%-5rem)]">
-                <p className="text-5xl font-bold bg-gradient-to-b from-primary to-primary/80 bg-clip-text text-transparent">
+                <p className="text-5xl font-semibold text-slate-800">
                   {companyUsers.length}
                 </p>
-                <p className="text-sm text-muted-foreground mt-2">Partner companies</p>
+                <p className="text-sm text-slate-500 mt-2">Partner companies</p>
               </CardContent>
             </Card>
 
-            <Card className="aspect-square overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300 group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <Card className="aspect-square border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300">
               <CardHeader className="pb-0">
-                <CardTitle className="flex items-center gap-2 text-lg font-medium">
-                  <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                    <Briefcase className="h-5 w-5 text-primary" />
+                <CardTitle className="flex items-center gap-2 text-md font-medium text-slate-700">
+                  <div className="p-2 rounded-lg bg-slate-100">
+                    <Briefcase className="h-4 w-4 text-slate-600" />
                   </div>
                   Internships
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center h-[calc(100%-5rem)]">
-                <p className="text-5xl font-bold bg-gradient-to-b from-primary to-primary/80 bg-clip-text text-transparent">
+                <p className="text-5xl font-semibold text-slate-800">
                   {internships.length}
                 </p>
-                <p className="text-sm text-muted-foreground mt-2">Available positions</p>
+                <p className="text-sm text-slate-500 mt-2">Available positions</p>
               </CardContent>
             </Card>
           </div>
 
           <div className="overflow-hidden">
             <Tabs defaultValue="students" className="w-full">
-              <TabsList className="w-full flex-wrap bg-muted/50 p-1 rounded-lg">
-                <TabsTrigger value="students" className="data-[state=active]:bg-primary data-[state=active]:text-white font-medium transition-all duration-200">
-                  <GraduationCap className="h-4 w-4 mr-2" />
+              <TabsList className="w-full flex-wrap bg-slate-100 p-1 rounded-lg">
+                <TabsTrigger value="students" className="data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm font-medium transition-all duration-200">
+                  <GraduationCap className="h-4 w-4 mr-2 text-slate-500" />
                   Students
                 </TabsTrigger>
-                <TabsTrigger value="companies" className="data-[state=active]:bg-primary data-[state=active]:text-white font-medium transition-all duration-200">
-                  <Building2 className="h-4 w-4 mr-2" />
+                <TabsTrigger value="companies" className="data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm font-medium transition-all duration-200">
+                  <Building2 className="h-4 w-4 mr-2 text-slate-500" />
                   Companies
                 </TabsTrigger>
-                <TabsTrigger value="admins" className="data-[state=active]:bg-primary data-[state=active]:text-white font-medium transition-all duration-200">
-                  <Users className="h-4 w-4 mr-2" />
+                <TabsTrigger value="admins" className="data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm font-medium transition-all duration-200">
+                  <Users className="h-4 w-4 mr-2 text-slate-500" />
                   Admins
                 </TabsTrigger>
-                <TabsTrigger value="internships" className="data-[state=active]:bg-primary data-[state=active]:text-white font-medium transition-all duration-200">
-                  <Briefcase className="h-4 w-4 mr-2" />
+                <TabsTrigger value="internships" className="data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm font-medium transition-all duration-200">
+                  <Briefcase className="h-4 w-4 mr-2 text-slate-500" />
                   Internships
                 </TabsTrigger>
-                <TabsTrigger value="applications" className="data-[state=active]:bg-primary data-[state=active]:text-white font-medium transition-all duration-200">
-                  <Download className="h-4 w-4 mr-2" />
+                <TabsTrigger value="applications" className="data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm font-medium transition-all duration-200">
+                  <Download className="h-4 w-4 mr-2 text-slate-500" />
                   Applications
                 </TabsTrigger>
               </TabsList>
@@ -410,34 +407,33 @@ export default function AdminDashboard() {
                     ) : (
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {internships.map((internship) => (
-                          <Card key={internship.id} className="border-none shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
+                          <Card key={internship.id} className="border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
                             <CardContent className="p-0">
                               <div className="flex flex-col h-full">
-                                <div className="bg-primary/10 p-4 relative">
-                                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                  <h3 className="font-semibold text-lg text-foreground relative z-10">{internship.title}</h3>
-                                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1 relative z-10">
-                                    <span className="bg-background rounded-full px-2 py-0.5">{internship.location}</span>
+                                <div className="bg-slate-50 p-4">
+                                  <h3 className="font-medium text-lg text-slate-800">{internship.title}</h3>
+                                  <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
+                                    <span className="bg-white border border-slate-200 rounded-full px-2 py-0.5">{internship.location}</span>
                                     <span>•</span>
-                                    <span className="bg-background rounded-full px-2 py-0.5">
+                                    <span className="bg-white border border-slate-200 rounded-full px-2 py-0.5">
                                       {new Date(internship.startDate).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})} - {new Date(internship.endDate).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}
                                     </span>
                                   </div>
                                 </div>
                                 <div className="p-4">
-                                  <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+                                  <p className="text-sm text-slate-600 line-clamp-3 mb-4">
                                     {internship.description}
                                   </p>
                                   
-                                  <div className="mt-auto flex items-center justify-between pt-2 border-t">
-                                    <div className="text-xs text-muted-foreground">
+                                  <div className="mt-auto flex items-center justify-between pt-2 border-t border-slate-100">
+                                    <div className="text-xs text-slate-500">
                                       ID: #{internship.id}
                                     </div>
                                     <div className="flex gap-2">
                                       <Button
                                         size="sm"
                                         variant="outline"
-                                        className="h-8 rounded-full bg-primary/5 hover:bg-primary/10 border-none"
+                                        className="h-8 rounded-md border-slate-200 text-slate-700 hover:bg-slate-50"
                                         onClick={() => {
                                           setEditInternshipData(internship);
                                           editInternshipForm.reset({
@@ -451,13 +447,13 @@ export default function AdminDashboard() {
                                           setIsEditInternshipOpen(true);
                                         }}
                                       >
-                                        <Pencil className="h-3.5 w-3.5 mr-1" />
+                                        <Pencil className="h-3.5 w-3.5 mr-1 text-slate-500" />
                                         Edit
                                       </Button>
                                       <Button
                                         size="sm"
-                                        variant="destructive"
-                                        className="h-8 rounded-full bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                                        variant="outline"
+                                        className="h-8 rounded-md border-red-200 text-red-600 hover:bg-red-50"
                                         onClick={() => deleteInternshipMutation.mutate(internship.id)}
                                       >
                                         <Trash className="h-3.5 w-3.5 mr-1" />
@@ -509,23 +505,23 @@ export default function AdminDashboard() {
                     
                     <div className="grid gap-4">
                       {applications.map((application) => (
-                        <Card key={application.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all duration-300">
+                        <Card key={application.id} className="border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300">
                           <CardContent className="p-0">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                               <div className="p-4 sm:p-6 flex-1">
                                 <div className="flex items-center gap-3 mb-2">
-                                  <div className={`w-3 h-3 rounded-full ${
+                                  <div className={`w-2.5 h-2.5 rounded-full ${
                                     application.status === "pending" 
-                                      ? "bg-yellow-500" 
+                                      ? "bg-amber-400" 
                                       : application.status === "accepted" 
-                                        ? "bg-green-500" 
-                                        : "bg-red-500"
+                                        ? "bg-emerald-500" 
+                                        : "bg-rose-500"
                                   }`}></div>
-                                  <h3 className="font-semibold">Student ID: {application.studentId}</h3>
+                                  <h3 className="font-medium text-slate-800">Student ID: {application.studentId}</h3>
                                 </div>
                                 <div className="space-y-1">
-                                  <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                    <span className="bg-primary/10 rounded-full px-2 py-0.5 text-xs font-medium text-primary">
+                                  <p className="text-sm text-slate-500 flex items-center gap-2">
+                                    <span className="bg-slate-100 border border-slate-200 rounded-full px-2 py-0.5 text-xs font-medium text-slate-700">
                                       {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
                                     </span>
                                     <span>•</span>
@@ -533,7 +529,7 @@ export default function AdminDashboard() {
                                       href={application.resumeUrl} 
                                       target="_blank" 
                                       rel="noopener noreferrer" 
-                                      className="text-primary hover:underline inline-flex items-center gap-1"
+                                      className="text-slate-700 hover:text-slate-900 hover:underline inline-flex items-center gap-1"
                                     >
                                       View Resume
                                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -547,11 +543,11 @@ export default function AdminDashboard() {
                               </div>
                               
                               {application.status === "pending" && (
-                                <div className="bg-muted/30 p-4 sm:p-6 flex flex-row sm:flex-col gap-2 border-t sm:border-t-0 sm:border-l">
+                                <div className="bg-slate-50 p-4 sm:p-6 flex flex-row sm:flex-col gap-2 border-t sm:border-t-0 sm:border-l border-slate-100">
                                   <Button
                                     size="sm"
-                                    variant="default"
-                                    className="bg-green-600 hover:bg-green-700 text-white w-full"
+                                    variant="outline"
+                                    className="bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100 hover:text-emerald-700 w-full"
                                     onClick={() => updateApplicationMutation.mutate({ id: application.id, status: "accepted" })}
                                   >
                                     Accept
@@ -559,7 +555,7 @@ export default function AdminDashboard() {
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 w-full"
+                                    className="border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 w-full"
                                     onClick={() => updateApplicationMutation.mutate({ id: application.id, status: "rejected" })}
                                   >
                                     Reject

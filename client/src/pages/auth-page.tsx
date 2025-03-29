@@ -91,11 +91,11 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4">
       <div className="w-full max-w-4xl grid md:grid-cols-2 gap-8">
-        <Card className="w-full border-none shadow-lg transition-all duration-300 hover:shadow-xl">
+        <Card className="w-full border border-slate-100 shadow-md transition-all duration-300 hover:shadow-lg">
           <CardHeader className="pb-2">
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+            <CardTitle className="text-2xl font-medium text-slate-800">
               {isLogin ? "Welcome Back" : "Create Account"}
             </CardTitle>
           </CardHeader>
@@ -105,9 +105,9 @@ export default function AuthPage() {
               onValueChange={(v) => setIsLogin(v === "login")}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="login" className="data-[state=active]:bg-primary data-[state=active]:text-white transition-all duration-200">Login</TabsTrigger>
-                <TabsTrigger value="register" className="data-[state=active]:bg-primary data-[state=active]:text-white transition-all duration-200">Register</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-slate-100">
+                <TabsTrigger value="login" className="data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm transition-all duration-200">Login</TabsTrigger>
+                <TabsTrigger value="register" className="data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm transition-all duration-200">Register</TabsTrigger>
               </TabsList>
 
               <Form {...form}>
@@ -241,10 +241,10 @@ export default function AuthPage() {
                     </div>
                   )}
 
-                  <div className="pt-2 animate-in fade-in-50 slide-in-from-bottom-5 duration-500 delay-300">
+                  <div className="pt-4 animate-in fade-in-50 slide-in-from-bottom-5 duration-500 delay-300">
                     <Button 
                       type="submit" 
-                      className="w-full font-medium shadow-sm hover:shadow-md transition-all"
+                      className="w-full font-medium bg-slate-800 hover:bg-slate-700 text-white shadow-none hover:shadow-sm transition-all"
                       disabled={loginMutation.isPending || registerMutation.isPending}
                     >
                       {isLogin ? "Sign In" : "Create Account"}
@@ -336,37 +336,37 @@ export default function AuthPage() {
           </CardContent>
         </Card>
 
-        <div className="hidden md:flex flex-col justify-center space-y-6 bg-gradient-to-br from-primary/5 to-transparent p-8 rounded-2xl transition-all duration-500 hover:from-primary/10">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">InternConnect</h1>
-          <p className="text-lg text-muted-foreground">
+        <div className="hidden md:flex flex-col justify-center space-y-6 bg-slate-50 p-8 rounded-lg border border-slate-100 transition-all duration-300">
+          <h1 className="text-3xl font-semibold text-slate-800">InternConnect</h1>
+          <p className="text-base text-slate-600">
             Connect with opportunities and talent. Your career journey starts here.
           </p>
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-6 mt-4">
             <div className="flex items-center gap-4 group">
-              <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                <GraduationCap className="h-8 w-8 text-primary" />
+              <div className="p-2.5 rounded-lg bg-slate-100 group-hover:bg-slate-200 transition-colors duration-300">
+                <GraduationCap className="h-6 w-6 text-slate-700" />
               </div>
               <div>
-                <h3 className="font-semibold group-hover:text-primary transition-colors duration-300">For Students</h3>
-                <p className="text-sm text-muted-foreground">Find internships matching your skills and career goals</p>
+                <h3 className="font-medium text-slate-800 group-hover:text-primary transition-colors duration-300">For Students</h3>
+                <p className="text-sm text-slate-500">Find internships matching your skills and career goals</p>
               </div>
             </div>
             <div className="flex items-center gap-4 group">
-              <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                <Building2 className="h-8 w-8 text-primary" />
+              <div className="p-2.5 rounded-lg bg-slate-100 group-hover:bg-slate-200 transition-colors duration-300">
+                <Building2 className="h-6 w-6 text-slate-700" />
               </div>
               <div>
-                <h3 className="font-semibold group-hover:text-primary transition-colors duration-300">For Companies</h3>
-                <p className="text-sm text-muted-foreground">Post internships and connect with talented students</p>
+                <h3 className="font-medium text-slate-800 group-hover:text-primary transition-colors duration-300">For Companies</h3>
+                <p className="text-sm text-slate-500">Post internships and connect with talented students</p>
               </div>
             </div>
             <div className="flex items-center gap-4 group">
-              <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                <KeyRound className="h-8 w-8 text-primary" />
+              <div className="p-2.5 rounded-lg bg-slate-100 group-hover:bg-slate-200 transition-colors duration-300">
+                <KeyRound className="h-6 w-6 text-slate-700" />
               </div>
               <div>
-                <h3 className="font-semibold group-hover:text-primary transition-colors duration-300">Secure Access</h3>
-                <p className="text-sm text-muted-foreground">Robust authentication and role-based permissions</p>
+                <h3 className="font-medium text-slate-800 group-hover:text-primary transition-colors duration-300">Secure Access</h3>
+                <p className="text-sm text-slate-500">Robust authentication and role-based permissions</p>
               </div>
             </div>
           </div>
