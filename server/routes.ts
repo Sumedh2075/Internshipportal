@@ -43,8 +43,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const internship = await storage.createInternship({
         ...data,
         companyId: req.user.id,
-        startDate: new Date(data.startDate).toISOString(),
-        endDate: new Date(data.endDate).toISOString(),
+        startDate: data.startDate,
+        endDate: data.endDate,
       });
       res.status(201).json(internship);
     } catch (error: any) {
@@ -65,7 +65,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/internships/:id", checkRole("company"), async (req, res) => {
     if (!req.user) return res.sendStatus(401);
     try {
-      const internship = await storage.updateInternship(parseInt(req.params.id), req.body);
+      const data = req.body;
+      // Format dates if they exist in the update
+      const formattedData: any = { ...data };
+      
+      // We're already using string dates in SQLite
+      
+      const internship = await storage.updateInternship(parseInt(req.params.id), formattedData);
       res.json(internship);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -84,6 +90,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Application routes
   app.post("/api/applications", checkRole("student"), async (req, res) => {
+    if (!req.user) return res.sendStatus(401);
+    
     const data = insertApplicationSchema.parse(req.body);
     const application = await storage.createApplication({
       ...data,
@@ -93,11 +101,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/applications/student", checkRole("student"), async (req, res) => {
+    if (!req.user) return res.sendStatus(401);
     const applications = await storage.getApplicationsByStudent(req.user.id);
     res.json(applications);
   });
 
   app.get("/api/applications/internship/:id", checkRole("company"), async (req, res) => {
+    if (!req.user) return res.sendStatus(401);
     const applications = await storage.getApplicationsByInternship(parseInt(req.params.id));
     res.json(applications);
   });

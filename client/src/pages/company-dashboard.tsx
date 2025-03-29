@@ -40,7 +40,8 @@ export default function CompanyDashboard() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<"internships" | "applications">("internships");
-  const [createInternshipForm] = useForm({
+  
+  const createInternshipForm = useForm({
     resolver: zodResolver(insertInternshipSchema),
     defaultValues: {
       title: "",
@@ -122,7 +123,7 @@ export default function CompanyDashboard() {
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["/api/applications/internship/" + selectedInternshipId]);
+      queryClient.invalidateQueries({ queryKey: [`/api/applications/internship/${selectedInternshipId}`] });
     },
   });
 

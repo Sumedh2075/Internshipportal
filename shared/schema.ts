@@ -18,8 +18,8 @@ export const internships = pgTable("internships", {
   description: text("description").notNull(),
   requirements: text("requirements").notNull(),
   location: text("location").notNull(),
-  startDate: timestamp("start_date").notNull(),
-  endDate: timestamp("end_date").notNull(),
+  startDate: text("start_date").notNull(), // Using text instead of timestamp for SQLite compatibility
+  endDate: text("end_date").notNull(),     // Using text instead of timestamp for SQLite compatibility
 });
 
 export const applications = pgTable("applications", {
@@ -51,8 +51,8 @@ export const insertInternshipSchema = createInsertSchema(internships)
     location: true,
   })
   .extend({
-    startDate: z.string().transform(val => new Date(val).toISOString()),
-    endDate: z.string().transform(val => new Date(val).toISOString()),
+    startDate: z.string(),
+    endDate: z.string(),
   });
 
 export const insertApplicationSchema = createInsertSchema(applications).pick({

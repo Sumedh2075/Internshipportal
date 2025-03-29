@@ -3,6 +3,29 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import Database from "better-sqlite3";
 
+// Define the IStorage interface
+interface IStorage {
+  sessionStore: session.Store;
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(insertUser: InsertUser): Promise<User>;
+  createInternship(data: Omit<Internship, "id">): Promise<Internship>;
+  getInternships(): Promise<Internship[]>;
+  getInternshipsByCompany(companyId: number): Promise<Internship[]>;
+  getInternship(id: number): Promise<Internship | undefined>;
+  createApplication(data: Omit<Application, "id" | "appliedAt" | "status">): Promise<Application>;
+  getApplicationsByStudent(studentId: number): Promise<Application[]>;
+  getApplicationsByInternship(internshipId: number): Promise<Application[]>;
+  updateApplicationStatus(id: number, status: "accepted" | "rejected"): Promise<Application>;
+  updateUserPassword(id: number, hashedPassword: string): Promise<User>;
+  updateInternship(id: number, data: Partial<Omit<Internship, "id">>): Promise<Internship>;
+  deleteInternship(id: number): Promise<void>;
+  getAllUsers(): Promise<User[]>;
+  deleteUser(id: number): Promise<void>;
+  updateUser(id: number, data: Partial<User>): Promise<User | undefined>;
+  getAllApplications(): Promise<Application[]>;
+};
+
 const MemoryStore = createMemoryStore(session);
 
 const db = new Database("db.sqlite");
@@ -14,7 +37,8 @@ db.exec(`
     username TEXT UNIQUE,
     password TEXT,
     role TEXT,
-    name TEXT
+    name TEXT,
+    email TEXT
   );
 
   CREATE TABLE IF NOT EXISTS internships (
@@ -57,8 +81,8 @@ export class SqliteStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const result = db.prepare(
-      "INSERT INTO users (username, password, role, name) VALUES (?, ?, ?, ?) RETURNING *"
-    ).get(insertUser.username, insertUser.password, insertUser.role, insertUser.name ?? null) as User;
+      "INSERT INTO users (username, password, role, name, email) VALUES (?, ?, ?, ?, ?) RETURNING *"
+    ).get(insertUser.username, insertUser.password, insertUser.role, insertUser.name ?? null, insertUser.email) as User;
     return result;
   }
 
@@ -134,7 +158,7 @@ export class SqliteStorage implements IStorage {
   }
 
   async updateUser(id: number, data: Partial<User>): Promise<User | undefined> {
-      const result = db.prepare("UPDATE users SET name = COALESCE(?, name), role = COALESCE(?, role) WHERE id = ? RETURNING *").get(data.name, data.role, id) as User | undefined;
+      const result = db.prepare("UPDATE users SET name = COALESCE(?, name), role = COALESCE(?, role), email = COALESCE(?, email) WHERE id = ? RETURNING *").get(data.name, data.role, data.email, id) as User | undefined;
       return result;
   }
 
