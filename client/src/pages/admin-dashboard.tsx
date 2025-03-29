@@ -224,86 +224,148 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <div className="min-h-screen bg-background p-4 sm:p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4 sm:p-6">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-6 rounded-xl shadow-sm">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">Admin Dashboard</h1>
+              <p className="text-muted-foreground mt-1">Manage your internship portal system</p>
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Menu className="h-4 w-4 mr-2" />
-                  Menu
+                <Button variant="outline" className="gap-2 shadow-sm hover:shadow transition-all">
+                  <Menu className="h-4 w-4" />
+                  Actions
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuContent align="end" className="w-56 shadow-lg border-none">
+                <DropdownMenuLabel>Admin Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setCreateAccountOpen(true)}>
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  New Account
+                <DropdownMenuItem 
+                  onClick={() => setCreateAccountOpen(true)}
+                  className="cursor-pointer hover:bg-primary/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2 py-1">
+                    <div className="bg-primary/10 p-1 rounded-full">
+                      <UserPlus className="h-4 w-4 text-primary" />
+                    </div>
+                    <span>New Account</span>
+                  </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setCreateInternshipOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Internship
+                <DropdownMenuItem 
+                  onClick={() => setCreateInternshipOpen(true)}
+                  className="cursor-pointer hover:bg-primary/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2 py-1">
+                    <div className="bg-primary/10 p-1 rounded-full">
+                      <Plus className="h-4 w-4 text-primary" />
+                    </div>
+                    <span>New Internship</span>
+                  </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={exportApplications}>
-                  <Download className="h-4 w-4 mr-2" />
-                  Export Applications
+                <DropdownMenuItem 
+                  onClick={exportApplications}
+                  className="cursor-pointer hover:bg-primary/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2 py-1">
+                    <div className="bg-primary/10 p-1 rounded-full">
+                      <Download className="h-4 w-4 text-primary" />
+                    </div>
+                    <span>Export Applications</span>
+                  </div>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => logoutMutation.mutate()}>
-                  Logout
+                <DropdownMenuItem 
+                  onClick={() => logoutMutation.mutate()}
+                  className="cursor-pointer hover:bg-destructive/10 text-destructive transition-colors"
+                >
+                  <div className="flex items-center gap-2 py-1">
+                    <span>Logout</span>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <Card className="aspect-square">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <GraduationCap className="h-5 w-5" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <Card className="aspect-square overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300 group relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <CardHeader className="pb-0">
+                <CardTitle className="flex items-center gap-2 text-lg font-medium">
+                  <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                    <GraduationCap className="h-5 w-5 text-primary" />
+                  </div>
                   Students
                 </CardTitle>
               </CardHeader>
-              <CardContent className="flex items-center justify-center h-[calc(100%-4rem)]">
-                <p className="text-4xl font-bold">{studentUsers.length}</p>
+              <CardContent className="flex flex-col items-center justify-center h-[calc(100%-5rem)]">
+                <p className="text-5xl font-bold bg-gradient-to-b from-primary to-primary/80 bg-clip-text text-transparent">
+                  {studentUsers.length}
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">Total registered students</p>
               </CardContent>
             </Card>
 
-            <Card className="aspect-square">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
+            <Card className="aspect-square overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300 group relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <CardHeader className="pb-0">
+                <CardTitle className="flex items-center gap-2 text-lg font-medium">
+                  <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                    <Building2 className="h-5 w-5 text-primary" />
+                  </div>
                   Companies
                 </CardTitle>
               </CardHeader>
-              <CardContent className="flex items-center justify-center h-[calc(100%-4rem)]">
-                <p className="text-4xl font-bold">{companyUsers.length}</p>
+              <CardContent className="flex flex-col items-center justify-center h-[calc(100%-5rem)]">
+                <p className="text-5xl font-bold bg-gradient-to-b from-primary to-primary/80 bg-clip-text text-transparent">
+                  {companyUsers.length}
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">Partner companies</p>
               </CardContent>
             </Card>
 
-            <Card className="aspect-square">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Briefcase className="h-5 w-5" />
+            <Card className="aspect-square overflow-hidden border-none shadow-md hover:shadow-lg transition-all duration-300 group relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <CardHeader className="pb-0">
+                <CardTitle className="flex items-center gap-2 text-lg font-medium">
+                  <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                    <Briefcase className="h-5 w-5 text-primary" />
+                  </div>
                   Internships
                 </CardTitle>
               </CardHeader>
-              <CardContent className="flex items-center justify-center h-[calc(100%-4rem)]">
-                <p className="text-4xl font-bold">{internships.length}</p>
+              <CardContent className="flex flex-col items-center justify-center h-[calc(100%-5rem)]">
+                <p className="text-5xl font-bold bg-gradient-to-b from-primary to-primary/80 bg-clip-text text-transparent">
+                  {internships.length}
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">Available positions</p>
               </CardContent>
             </Card>
           </div>
 
           <div className="overflow-hidden">
             <Tabs defaultValue="students" className="w-full">
-              <TabsList className="w-full flex-wrap">
-                <TabsTrigger value="students">Students</TabsTrigger>
-                <TabsTrigger value="companies">Companies</TabsTrigger>
-                <TabsTrigger value="admins">Admins</TabsTrigger>
-                <TabsTrigger value="internships">Internships</TabsTrigger>
-                <TabsTrigger value="applications">Applications</TabsTrigger>
+              <TabsList className="w-full flex-wrap bg-muted/50 p-1 rounded-lg">
+                <TabsTrigger value="students" className="data-[state=active]:bg-primary data-[state=active]:text-white font-medium transition-all duration-200">
+                  <GraduationCap className="h-4 w-4 mr-2" />
+                  Students
+                </TabsTrigger>
+                <TabsTrigger value="companies" className="data-[state=active]:bg-primary data-[state=active]:text-white font-medium transition-all duration-200">
+                  <Building2 className="h-4 w-4 mr-2" />
+                  Companies
+                </TabsTrigger>
+                <TabsTrigger value="admins" className="data-[state=active]:bg-primary data-[state=active]:text-white font-medium transition-all duration-200">
+                  <Users className="h-4 w-4 mr-2" />
+                  Admins
+                </TabsTrigger>
+                <TabsTrigger value="internships" className="data-[state=active]:bg-primary data-[state=active]:text-white font-medium transition-all duration-200">
+                  <Briefcase className="h-4 w-4 mr-2" />
+                  Internships
+                </TabsTrigger>
+                <TabsTrigger value="applications" className="data-[state=active]:bg-primary data-[state=active]:text-white font-medium transition-all duration-200">
+                  <Download className="h-4 w-4 mr-2" />
+                  Applications
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="students">
                 <Card>
@@ -346,48 +408,63 @@ export default function AdminDashboard() {
                         <Loader2 className="h-6 w-6 animate-spin" />
                       </div>
                     ) : (
-                      <div className="space-y-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {internships.map((internship) => (
-                          <Card key={internship.id}>
-                            <CardContent className="pt-6">
-                              <div className="flex justify-between">
-                                <div>
-                                  <h3 className="font-semibold">{internship.title}</h3>
-                                  <p className="text-sm text-muted-foreground mt-2">
-                                    {internship.description}
-                                  </p>
-                                  <div className="mt-2 space-y-1 text-sm">
-                                    <p>Location: {internship.location}</p>
-                                    <p>Start: {new Date(internship.startDate).toLocaleDateString()}</p>
-                                    <p>End: {new Date(internship.endDate).toLocaleDateString()}</p>
+                          <Card key={internship.id} className="border-none shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
+                            <CardContent className="p-0">
+                              <div className="flex flex-col h-full">
+                                <div className="bg-primary/10 p-4 relative">
+                                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                  <h3 className="font-semibold text-lg text-foreground relative z-10">{internship.title}</h3>
+                                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1 relative z-10">
+                                    <span className="bg-background rounded-full px-2 py-0.5">{internship.location}</span>
+                                    <span>•</span>
+                                    <span className="bg-background rounded-full px-2 py-0.5">
+                                      {new Date(internship.startDate).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})} - {new Date(internship.endDate).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}
+                                    </span>
                                   </div>
                                 </div>
-                                <div className="flex gap-2">
-                                  <Button
-                                    size="icon"
-                                    variant="outline"
-                                    onClick={() => {
-                                      setEditInternshipData(internship);
-                                      editInternshipForm.reset({
-                                        title: internship.title,
-                                        description: internship.description,
-                                        requirements: internship.requirements,
-                                        location: internship.location,
-                                        startDate: internship.startDate,
-                                        endDate: internship.endDate,
-                                      });
-                                      setIsEditInternshipOpen(true);
-                                    }}
-                                  >
-                                    <Pencil className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    size="icon"
-                                    variant="destructive"
-                                    onClick={() => deleteInternshipMutation.mutate(internship.id)}
-                                  >
-                                    <Trash className="h-4 w-4" />
-                                  </Button>
+                                <div className="p-4">
+                                  <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+                                    {internship.description}
+                                  </p>
+                                  
+                                  <div className="mt-auto flex items-center justify-between pt-2 border-t">
+                                    <div className="text-xs text-muted-foreground">
+                                      ID: #{internship.id}
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-8 rounded-full bg-primary/5 hover:bg-primary/10 border-none"
+                                        onClick={() => {
+                                          setEditInternshipData(internship);
+                                          editInternshipForm.reset({
+                                            title: internship.title,
+                                            description: internship.description,
+                                            requirements: internship.requirements,
+                                            location: internship.location,
+                                            startDate: internship.startDate,
+                                            endDate: internship.endDate,
+                                          });
+                                          setIsEditInternshipOpen(true);
+                                        }}
+                                      >
+                                        <Pencil className="h-3.5 w-3.5 mr-1" />
+                                        Edit
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="destructive"
+                                        className="h-8 rounded-full bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                                        onClick={() => deleteInternshipMutation.mutate(internship.id)}
+                                      >
+                                        <Trash className="h-3.5 w-3.5 mr-1" />
+                                        Delete
+                                      </Button>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             </CardContent>
@@ -404,51 +481,96 @@ export default function AdminDashboard() {
                     <CardTitle>Applications</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="mb-4">
-                      <select
-                        className="w-full p-2 border rounded"
-                        onChange={(e) => setSelectedInternshipId(Number(e.target.value))}
-                        value={selectedInternshipId || ''}
-                      >
-                        <option value="">Select an internship to view applications</option>
-                        {internships.map((internship) => (
-                          <option key={internship.id} value={internship.id}>
-                            {internship.title}
-                          </option>
-                        ))}
-                      </select>
+                    <div className="mb-6">
+                      <div className="relative bg-muted/50 rounded-md p-1">
+                        <Select
+                          value={selectedInternshipId?.toString() || ''}
+                          onValueChange={(value) => setSelectedInternshipId(Number(value))}
+                        >
+                          <SelectTrigger className="w-full h-12 bg-background border-none shadow-sm">
+                            <SelectValue placeholder="Select an internship to view applications" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {internships.map((internship) => (
+                              <SelectItem key={internship.id} value={internship.id.toString()}>
+                                {internship.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
-                    {applications.map((application) => (
-                      <Card key={application.id}>
-                        <CardContent className="flex items-center justify-between p-4">
-                          <div>
-                            <h3 className="font-semibold">Student ID: {application.studentId}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              Resume: <a href={application.resumeUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">View Resume</a>
-                            </p>
-                            <p className="text-sm text-muted-foreground">Status: {application.status}</p>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => updateApplicationMutation.mutate({ id: application.id, status: "accepted" })}
-                              disabled={application.status !== "pending"}
-                            >
-                              Accept
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => updateApplicationMutation.mutate({ id: application.id, status: "rejected" })}
-                              disabled={application.status !== "pending"}
-                            >
-                              Reject
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                    
+                    {applications.length === 0 && selectedInternshipId && (
+                      <div className="text-center py-12 bg-muted/20 rounded-lg">
+                        <p className="text-muted-foreground">No applications for this internship yet</p>
+                      </div>
+                    )}
+                    
+                    <div className="grid gap-4">
+                      {applications.map((application) => (
+                        <Card key={application.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all duration-300">
+                          <CardContent className="p-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                              <div className="p-4 sm:p-6 flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <div className={`w-3 h-3 rounded-full ${
+                                    application.status === "pending" 
+                                      ? "bg-yellow-500" 
+                                      : application.status === "accepted" 
+                                        ? "bg-green-500" 
+                                        : "bg-red-500"
+                                  }`}></div>
+                                  <h3 className="font-semibold">Student ID: {application.studentId}</h3>
+                                </div>
+                                <div className="space-y-1">
+                                  <p className="text-sm text-muted-foreground flex items-center gap-2">
+                                    <span className="bg-primary/10 rounded-full px-2 py-0.5 text-xs font-medium text-primary">
+                                      {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                                    </span>
+                                    <span>•</span>
+                                    <a 
+                                      href={application.resumeUrl} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer" 
+                                      className="text-primary hover:underline inline-flex items-center gap-1"
+                                    >
+                                      View Resume
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                        <polyline points="15 3 21 3 21 9"></polyline>
+                                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                                      </svg>
+                                    </a>
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              {application.status === "pending" && (
+                                <div className="bg-muted/30 p-4 sm:p-6 flex flex-row sm:flex-col gap-2 border-t sm:border-t-0 sm:border-l">
+                                  <Button
+                                    size="sm"
+                                    variant="default"
+                                    className="bg-green-600 hover:bg-green-700 text-white w-full"
+                                    onClick={() => updateApplicationMutation.mutate({ id: application.id, status: "accepted" })}
+                                  >
+                                    Accept
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 w-full"
+                                    onClick={() => updateApplicationMutation.mutate({ id: application.id, status: "rejected" })}
+                                  >
+                                    Reject
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -459,21 +581,24 @@ export default function AdminDashboard() {
 
       {createAccountOpen && (
         <Dialog open={createAccountOpen} onOpenChange={setCreateAccountOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create New Account</DialogTitle>
+          <DialogContent className="sm:max-w-md border-none shadow-xl">
+            <DialogHeader className="pb-4 border-b">
+              <DialogTitle className="text-xl font-bold">Create New Account</DialogTitle>
             </DialogHeader>
             <Form {...createAccountForm}>
-              <form onSubmit={createAccountForm.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-4">
-                {/* Removed role field */}
+              <form onSubmit={createAccountForm.handleSubmit((data) => createAccountMutation.mutate(data))} className="space-y-4 py-4">
                 <FormField
                   control={createAccountForm.control}
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel className="text-sm font-medium">Username</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input 
+                          {...field} 
+                          className="bg-muted/30 focus:bg-white transition-colors" 
+                          placeholder="Enter a unique username"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -484,9 +609,14 @@ export default function AdminDashboard() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel className="text-sm font-medium">Password</FormLabel>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <Input 
+                          type="password" 
+                          {...field} 
+                          className="bg-muted/30 focus:bg-white transition-colors" 
+                          placeholder="Enter a secure password"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -497,15 +627,35 @@ export default function AdminDashboard() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel className="text-sm font-medium">Email</FormLabel>
                       <FormControl>
-                        <Input type="email" {...field} />
+                        <Input 
+                          type="email" 
+                          {...field} 
+                          className="bg-muted/30 focus:bg-white transition-colors" 
+                          placeholder="Enter a valid email address"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">Create Account</Button>
+                <div className="pt-2">
+                  <Button 
+                    type="submit" 
+                    className="w-full font-medium shadow-sm hover:shadow-md transition-all"
+                    disabled={createAccountMutation.isPending}
+                  >
+                    {createAccountMutation.isPending ? (
+                      <>
+                        <span className="mr-2 inline-block animate-spin">⟳</span> 
+                        Creating...
+                      </>
+                    ) : (
+                      "Create Account"
+                    )}
+                  </Button>
+                </div>
               </form>
             </Form>
           </DialogContent>
@@ -514,20 +664,24 @@ export default function AdminDashboard() {
 
       {createInternshipOpen && (
         <Dialog open={createInternshipOpen} onOpenChange={setCreateInternshipOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create New Internship</DialogTitle>
+          <DialogContent className="sm:max-w-lg border-none shadow-xl">
+            <DialogHeader className="pb-4 border-b">
+              <DialogTitle className="text-xl font-bold">Create New Internship</DialogTitle>
             </DialogHeader>
             <Form {...createInternshipForm}>
-              <form onSubmit={createInternshipForm.handleSubmit((data) => createInternshipMutation.mutate(data))} className="space-y-4">
+              <form onSubmit={createInternshipForm.handleSubmit((data) => createInternshipMutation.mutate(data))} className="space-y-5 py-4">
                 <FormField
                   control={createInternshipForm.control}
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel className="text-sm font-medium">Internship Title</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input 
+                          {...field} 
+                          className="bg-muted/30 focus:bg-white transition-colors" 
+                          placeholder="e.g. Software Engineering Intern"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -538,9 +692,13 @@ export default function AdminDashboard() {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel className="text-sm font-medium">Description</FormLabel>
                       <FormControl>
-                        <Textarea {...field} />
+                        <Textarea 
+                          {...field} 
+                          className="bg-muted/30 focus:bg-white transition-colors h-24 resize-y" 
+                          placeholder="Describe the internship role, responsibilities, and expectations"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -551,9 +709,13 @@ export default function AdminDashboard() {
                   name="requirements"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Requirements</FormLabel>
+                      <FormLabel className="text-sm font-medium">Requirements</FormLabel>
                       <FormControl>
-                        <Textarea {...field} />
+                        <Textarea 
+                          {...field} 
+                          className="bg-muted/30 focus:bg-white transition-colors h-24 resize-y" 
+                          placeholder="List qualifications, skills, and experiences required"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -564,9 +726,13 @@ export default function AdminDashboard() {
                   name="location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Location</FormLabel>
+                      <FormLabel className="text-sm font-medium">Location</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input 
+                          {...field} 
+                          className="bg-muted/30 focus:bg-white transition-colors" 
+                          placeholder="e.g. New York, NY or Remote"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -578,9 +744,13 @@ export default function AdminDashboard() {
                     name="startDate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Start Date</FormLabel>
+                        <FormLabel className="text-sm font-medium">Start Date</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} />
+                          <Input 
+                            type="date" 
+                            {...field} 
+                            className="bg-muted/30 focus:bg-white transition-colors" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -591,16 +761,35 @@ export default function AdminDashboard() {
                     name="endDate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>End Date</FormLabel>
+                        <FormLabel className="text-sm font-medium">End Date</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} />
+                          <Input 
+                            type="date" 
+                            {...field} 
+                            className="bg-muted/30 focus:bg-white transition-colors" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-                <Button type="submit" className="w-full">Create Internship</Button>
+                <div className="pt-2">
+                  <Button 
+                    type="submit" 
+                    className="w-full font-medium shadow-sm hover:shadow-md transition-all"
+                    disabled={createInternshipMutation.isPending}
+                  >
+                    {createInternshipMutation.isPending ? (
+                      <>
+                        <span className="mr-2 inline-block animate-spin">⟳</span> 
+                        Creating...
+                      </>
+                    ) : (
+                      "Create Internship"
+                    )}
+                  </Button>
+                </div>
               </form>
             </Form>
           </DialogContent>
@@ -609,20 +798,23 @@ export default function AdminDashboard() {
 
       {isEditInternshipOpen && (
         <Dialog open={isEditInternshipOpen} onOpenChange={setIsEditInternshipOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit Internship</DialogTitle>
+          <DialogContent className="sm:max-w-lg border-none shadow-xl">
+            <DialogHeader className="pb-4 border-b">
+              <DialogTitle className="text-xl font-bold">Edit Internship</DialogTitle>
             </DialogHeader>
             <Form {...editInternshipForm}>
-              <form onSubmit={editInternshipForm.handleSubmit((data) => updateInternshipMutation.mutate(data))} className="space-y-4">
+              <form onSubmit={editInternshipForm.handleSubmit((data) => updateInternshipMutation.mutate(data))} className="space-y-5 py-4">
                 <FormField
                   control={editInternshipForm.control}
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel className="text-sm font-medium">Internship Title</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input 
+                          {...field} 
+                          className="bg-muted/30 focus:bg-white transition-colors" 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -633,9 +825,12 @@ export default function AdminDashboard() {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel className="text-sm font-medium">Description</FormLabel>
                       <FormControl>
-                        <Textarea {...field} />
+                        <Textarea 
+                          {...field} 
+                          className="bg-muted/30 focus:bg-white transition-colors h-24 resize-y" 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -646,9 +841,12 @@ export default function AdminDashboard() {
                   name="requirements"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Requirements</FormLabel>
+                      <FormLabel className="text-sm font-medium">Requirements</FormLabel>
                       <FormControl>
-                        <Textarea {...field} />
+                        <Textarea 
+                          {...field} 
+                          className="bg-muted/30 focus:bg-white transition-colors h-24 resize-y" 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -659,9 +857,12 @@ export default function AdminDashboard() {
                   name="location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Location</FormLabel>
+                      <FormLabel className="text-sm font-medium">Location</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input 
+                          {...field} 
+                          className="bg-muted/30 focus:bg-white transition-colors" 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -673,9 +874,13 @@ export default function AdminDashboard() {
                     name="startDate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Start Date</FormLabel>
+                        <FormLabel className="text-sm font-medium">Start Date</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} />
+                          <Input 
+                            type="date" 
+                            {...field} 
+                            className="bg-muted/30 focus:bg-white transition-colors" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -686,16 +891,48 @@ export default function AdminDashboard() {
                     name="endDate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>End Date</FormLabel>
+                        <FormLabel className="text-sm font-medium">End Date</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} />
+                          <Input 
+                            type="date" 
+                            {...field} 
+                            className="bg-muted/30 focus:bg-white transition-colors" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-                <Button type="submit" className="w-full">Update Internship</Button>
+                <div className="pt-2 flex gap-3">
+                  <Button 
+                    type="submit" 
+                    className="flex-1 font-medium shadow-sm hover:shadow-md transition-all"
+                    disabled={updateInternshipMutation.isPending}
+                  >
+                    {updateInternshipMutation.isPending ? (
+                      <>
+                        <span className="mr-2 inline-block animate-spin">⟳</span> 
+                        Updating...
+                      </>
+                    ) : (
+                      "Update Internship"
+                    )}
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
+                    onClick={() => {
+                      if (editInternshipData) {
+                        deleteInternshipMutation.mutate(editInternshipData.id);
+                        setIsEditInternshipOpen(false);
+                      }
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </div>
               </form>
             </Form>
           </DialogContent>

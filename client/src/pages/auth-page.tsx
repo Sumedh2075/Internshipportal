@@ -91,73 +91,89 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl grid md:grid-cols-2 gap-6">
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl grid md:grid-cols-2 gap-8">
+        <Card className="w-full border-none shadow-lg transition-all duration-300 hover:shadow-xl">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
               {isLogin ? "Welcome Back" : "Create Account"}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs value={isLogin ? "login" : "register"} onValueChange={(v) => setIsLogin(v === "login")}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
+            <Tabs 
+              value={isLogin ? "login" : "register"} 
+              onValueChange={(v) => setIsLogin(v === "login")}
+              className="w-full"
+            >
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="login" className="data-[state=active]:bg-primary data-[state=active]:text-white transition-all duration-200">Login</TabsTrigger>
+                <TabsTrigger value="register" className="data-[state=active]:bg-primary data-[state=active]:text-white transition-all duration-200">Register</TabsTrigger>
               </TabsList>
 
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-                  <FormField
-                    control={form.control}
-                    name={isLogin ? "username" : (selectedRole === "student" ? "studentId" : "username")}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{isLogin ? (selectedRole === "student" ? "Student ID" : "Username") : (selectedRole === "student" ? "Student ID" : "Username")}</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <div className="relative">
+                  <div className="animate-in fade-in-50 slide-in-from-bottom-5 duration-500">
+                    <FormField
+                      control={form.control}
+                      name={isLogin ? "username" : (selectedRole === "student" ? "studentId" : "username")}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium">
+                            {isLogin ? (selectedRole === "student" ? "Student ID" : "Username") : (selectedRole === "student" ? "Student ID" : "Username")}
+                          </FormLabel>
+                          <FormControl>
                             <Input 
-                              type={showPassword ? "text" : "password"} 
                               {...field} 
+                              className="bg-muted/30 focus:bg-white transition-colors"
+                              placeholder={isLogin ? "Enter your username" : (selectedRole === "student" ? "Enter your student ID" : "Choose a username")}
                             />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="absolute right-0 top-0 h-full px-3"
-                              onClick={() => setShowPassword(!showPassword)}
-                            >
-                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </Button>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="animate-in fade-in-50 slide-in-from-bottom-5 duration-500 delay-100">
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium">Password</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input 
+                                type={showPassword ? "text" : "password"} 
+                                {...field} 
+                                className="bg-muted/30 focus:bg-white transition-colors"
+                                placeholder={isLogin ? "Enter your password" : "Create a secure password"}
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-foreground transition-colors"
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              </Button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   {!isLogin && (
-                    <>
+                    <div className="space-y-4 animate-in fade-in-50 slide-in-from-bottom-5 duration-500 delay-200">
                       <FormField
                         control={form.control}
                         name="role"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Role</FormLabel>
+                            <FormLabel className="text-sm font-medium">I am a...</FormLabel>
                             <Select 
                               value={field.value} 
                               onValueChange={(value) => {
@@ -166,8 +182,8 @@ export default function AuthPage() {
                               }}
                             >
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a role" />
+                                <SelectTrigger className="bg-muted/30 focus:bg-white transition-colors">
+                                  <SelectValue placeholder="Select your role" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
@@ -181,56 +197,74 @@ export default function AuthPage() {
                       />
 
                       {selectedRole === "student" && (
+                        <div className="animate-in fade-in-50 slide-in-from-right-5 duration-300">
+                          <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm font-medium">Full Name</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    className="bg-muted/30 focus:bg-white transition-colors"
+                                    placeholder="Enter your full name"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      )}
+
+                      <div className="animate-in fade-in-50 slide-in-from-bottom-5 duration-300">
                         <FormField
                           control={form.control}
-                          name="name"
+                          name="email"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Full Name</FormLabel>
+                              <FormLabel className="text-sm font-medium">Email</FormLabel>
                               <FormControl>
-                                <Input {...field} />
+                                <Input 
+                                  type="email" 
+                                  {...field} 
+                                  className="bg-muted/30 focus:bg-white transition-colors"
+                                  placeholder="Enter your email address"
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
-                      )}
-
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input type="email" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </>
+                      </div>
+                    </div>
                   )}
 
-                  <Button 
-                    type="submit" 
-                    className="w-full"
-                    disabled={loginMutation.isPending || registerMutation.isPending}
-                  >
-                    {isLogin ? "Login" : "Register"}
-                  </Button>
+                  <div className="pt-2 animate-in fade-in-50 slide-in-from-bottom-5 duration-500 delay-300">
+                    <Button 
+                      type="submit" 
+                      className="w-full font-medium shadow-sm hover:shadow-md transition-all"
+                      disabled={loginMutation.isPending || registerMutation.isPending}
+                    >
+                      {isLogin ? "Sign In" : "Create Account"}
+                      {(loginMutation.isPending || registerMutation.isPending) && (
+                        <span className="ml-2 inline-block animate-spin">⟳</span>
+                      )}
+                    </Button>
+                  </div>
 
                   {isLogin && (
-                    <div className="text-center">
+                    <div className="text-center animate-in fade-in-50 slide-in-from-bottom-5 duration-500 delay-400">
                       <Dialog open={showResetPassword} onOpenChange={setShowResetPassword}>
                         <DialogTrigger asChild>
-                          <Button variant="link" className="text-sm">
+                          <Button variant="link" className="text-sm text-primary/80 hover:text-primary transition-colors">
                             Forgot password?
                           </Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="sm:max-w-md shadow-xl border-none">
                           <DialogHeader>
-                            <DialogTitle>Reset Password</DialogTitle>
+                            <DialogTitle className="text-xl font-bold">Reset Your Password</DialogTitle>
                           </DialogHeader>
                           <Form {...resetPasswordForm}>
                             <form onSubmit={resetPasswordForm.handleSubmit(onResetPassword)} className="space-y-4">
@@ -239,9 +273,13 @@ export default function AuthPage() {
                                 name="username"
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>Username</FormLabel>
+                                    <FormLabel className="text-sm font-medium">Username</FormLabel>
                                     <FormControl>
-                                      <Input {...field} />
+                                      <Input 
+                                        {...field} 
+                                        className="bg-muted/30 focus:bg-white transition-colors"
+                                        placeholder="Enter your username"
+                                      />
                                     </FormControl>
                                     <FormMessage />
                                   </FormItem>
@@ -252,18 +290,20 @@ export default function AuthPage() {
                                 name="password"
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>New Password</FormLabel>
+                                    <FormLabel className="text-sm font-medium">New Password</FormLabel>
                                     <FormControl>
                                       <div className="relative">
                                         <Input 
                                           type={showNewPassword ? "text" : "password"} 
                                           {...field} 
+                                          className="bg-muted/30 focus:bg-white transition-colors"
+                                          placeholder="Enter your new password"
                                         />
                                         <Button
                                           type="button"
                                           variant="ghost"
                                           size="icon"
-                                          className="absolute right-0 top-0 h-full px-3"
+                                          className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-foreground transition-colors"
                                           onClick={() => setShowNewPassword(!showNewPassword)}
                                         >
                                           {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -274,13 +314,20 @@ export default function AuthPage() {
                                   </FormItem>
                                 )}
                               />
-                              <Button type="submit" className="w-full">
+                              <Button 
+                                type="submit" 
+                                className="w-full font-medium shadow-sm hover:shadow-md transition-all"
+                              >
                                 Reset Password
                               </Button>
                             </form>
                           </Form>
                         </DialogContent>
                       </Dialog>
+                      
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Demo: username: "admin", password: "admin123"
+                      </p>
                     </div>
                   )}
                 </form>
@@ -289,31 +336,37 @@ export default function AuthPage() {
           </CardContent>
         </Card>
 
-        <div className="hidden md:flex flex-col justify-center space-y-6">
-          <h1 className="text-4xl font-bold">Internship Portal</h1>
+        <div className="hidden md:flex flex-col justify-center space-y-6 bg-gradient-to-br from-primary/5 to-transparent p-8 rounded-2xl transition-all duration-500 hover:from-primary/10">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">InternConnect</h1>
           <p className="text-lg text-muted-foreground">
             Connect with opportunities and talent. Your career journey starts here.
           </p>
-          <div className="grid grid-cols-1 gap-4">
-            <div className="flex items-center gap-3">
-              <GraduationCap className="h-8 w-8 text-primary" />
+          <div className="grid grid-cols-1 gap-6">
+            <div className="flex items-center gap-4 group">
+              <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                <GraduationCap className="h-8 w-8 text-primary" />
+              </div>
               <div>
-                <h3 className="font-semibold">For Students</h3>
-                <p className="text-sm text-muted-foreground">Find internships matching your skills</p>
+                <h3 className="font-semibold group-hover:text-primary transition-colors duration-300">For Students</h3>
+                <p className="text-sm text-muted-foreground">Find internships matching your skills and career goals</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Building2 className="h-8 w-8 text-primary" />
+            <div className="flex items-center gap-4 group">
+              <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                <Building2 className="h-8 w-8 text-primary" />
+              </div>
               <div>
-                <h3 className="font-semibold">For Companies</h3>
-                <p className="text-sm text-muted-foreground">Post internships and find great talent</p>
+                <h3 className="font-semibold group-hover:text-primary transition-colors duration-300">For Companies</h3>
+                <p className="text-sm text-muted-foreground">Post internships and connect with talented students</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <KeyRound className="h-8 w-8 text-primary" />
+            <div className="flex items-center gap-4 group">
+              <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                <KeyRound className="h-8 w-8 text-primary" />
+              </div>
               <div>
-                <h3 className="font-semibold">Secure Access</h3>
-                <p className="text-sm text-muted-foreground">Simple and secure authentication</p>
+                <h3 className="font-semibold group-hover:text-primary transition-colors duration-300">Secure Access</h3>
+                <p className="text-sm text-muted-foreground">Robust authentication and role-based permissions</p>
               </div>
             </div>
           </div>
