@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertInternshipSchema, insertApplicationSchema } from "@shared/schema";
+import * as XLSX from 'xlsx';
 
 interface AuthenticatedUser {
   id: number;
@@ -134,18 +135,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/applications/internship/:id", checkRole("company"), async (req, res) => {
     if (!req.user) return res.sendStatus(401);
-    const applications = await storage.getApplicationsByInternship(parseInt(req.params.id));
+    
+    // First verify the internship belongs to this company
+    const internshipId = parseInt(req.params.id);
+    const internship = await storage.getInternship(internshipId);
+    
+    // If internship doesn't exist or doesn't belong to this company, return 403
+    if (!internship || internship.companyId !== req.user.id) {
+      return res.status(403).json({ error: "Access denied: You don't have permission to view these applications" });
+    }
+    
+    const applications = await storage.getApplicationsByInternship(internshipId);
     res.json(applications);
   });
 
   app.patch("/api/applications/:id/status", checkRole("company"), async (req, res) => {
+    if (!req.user) return res.sendStatus(401);
+    
     const { status } = req.body;
     if (status !== "accepted" && status !== "rejected") {
       return res.status(400).send("Invalid status");
     }
-
-    const application = await storage.updateApplicationStatus(parseInt(req.params.id), status);
-    res.json(application);
+    
+    // Get the application
+    const applicationId = parseInt(req.params.id);
+    const applications = await storage.getAllApplications();
+    const application = applications.find(app => app.id === applicationId);
+    
+    if (!application) {
+      return res.status(404).json({ error: "Application not found" });
+    }
+    
+    // Find the internship
+    const internship = await storage.getInternship(application.internshipId);
+    
+    // If internship doesn't exist or doesn't belong to this company, return 403
+    if (!internship || internship.companyId !== req.user.id) {
+      return res.status(403).json({ error: "Access denied: You don't have permission to update this application" });
+    }
+    
+    const updatedApplication = await storage.updateApplicationStatus(applicationId, status);
+    res.json(updatedApplication);
   });
 
   // Admin routes
@@ -162,6 +192,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/admin/users/:id", checkRole("admin"), async (req, res) => {
     const user = await storage.updateUser(parseInt(req.params.id), req.body);
     res.json(user);
+  });
+
+  app.get("/api/admin/applications", checkRole("admin"), async (req, res) => {
+    const applications = await storage.getAllApplications();
+    res.json(applications);
   });
 
   app.get("/api/admin/applications/export", checkRole("admin"), async (req, res) => {
@@ -196,6 +231,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = req.body;
       const internship = await storage.updateInternship(parseInt(req.params.id), data);
       res.json(internship);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.post("/api/admin/internships", checkRole("admin"), async (req, res) => {
+    try {
+      // For admin, allow specifying companyId
+      const internship = await storage.createInternship({
+        title: req.body.title,
+        description: req.body.description,
+        location: req.body.location,
+        requirements: req.body.requirements,
+        companyId: req.body.companyId || req.user?.id,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+      });
+      res.status(201).json(internship);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
