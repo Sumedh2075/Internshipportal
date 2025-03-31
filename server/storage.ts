@@ -95,19 +95,24 @@ export class SqliteStorage implements IStorage {
 
   async getInternships(): Promise<(Internship & { companyName?: string })[]> {
     return db.prepare(`
-      SELECT i.*, u.name as companyName 
+      SELECT i.*, COALESCE(u.name, u.username) as companyName 
       FROM internships i
       LEFT JOIN users u ON i.companyId = u.id
     `).all() as (Internship & { companyName?: string })[];
   }
 
-  async getInternshipsByCompany(companyId: number): Promise<Internship[]> {
-    return db.prepare("SELECT * FROM internships WHERE companyId = ?").all(companyId) as Internship[];
+  async getInternshipsByCompany(companyId: number): Promise<(Internship & { companyName?: string })[]> {
+    return db.prepare(`
+      SELECT i.*, COALESCE(u.name, u.username) as companyName 
+      FROM internships i
+      LEFT JOIN users u ON i.companyId = u.id
+      WHERE i.companyId = ?
+    `).all(companyId) as (Internship & { companyName?: string })[];
   }
 
   async getInternship(id: number): Promise<(Internship & { companyName?: string }) | undefined> {
     return db.prepare(`
-      SELECT i.*, u.name as companyName 
+      SELECT i.*, COALESCE(u.name, u.username) as companyName 
       FROM internships i
       LEFT JOIN users u ON i.companyId = u.id
       WHERE i.id = ?

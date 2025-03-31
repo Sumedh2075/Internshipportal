@@ -120,7 +120,7 @@ export default function StudentDashboard() {
                               {internship.description}
                             </p>
                             <div className="mt-2 space-y-1 text-sm">
-                              <p>Company: {internship.companyName || "Unknown Company"}</p>
+                              <p>Company: {internship.companyName || internship.companyId ? `Company #${internship.companyId}` : "Unknown Company"}</p>
                               <p>Location: {internship.location}</p>
                               <p>Start: {new Date(internship.startDate).toLocaleDateString()}</p>
                               <p>End: {new Date(internship.endDate).toLocaleDateString()}</p>
@@ -216,7 +216,7 @@ export default function StudentDashboard() {
                           </p>
                           {internship && (
                             <p className="text-sm mt-1">
-                              Company: {internship.companyName || "Unknown"}
+                              Company: {internship.companyName || internship.companyId ? `Company #${internship.companyId}` : "Unknown"}
                             </p>
                           )}
                           <p className="text-sm">
