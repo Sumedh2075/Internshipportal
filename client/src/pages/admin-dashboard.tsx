@@ -34,6 +34,8 @@ interface Internship {
   requirements: string;
   startDate: string;
   endDate: string;
+  companyId: number;
+  companyName?: string;
 }
 
 interface Application {
@@ -412,6 +414,9 @@ export default function AdminDashboard() {
                               <div className="flex flex-col h-full">
                                 <div className="bg-slate-50 p-4">
                                   <h3 className="font-medium text-lg text-slate-800">{internship.title}</h3>
+                                  <div className="text-sm text-slate-600 mt-0.5">
+                                    By <span className="font-medium">{internship.companyName}</span>
+                                  </div>
                                   <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
                                     <span className="bg-white border border-slate-200 rounded-full px-2 py-0.5">{internship.location}</span>
                                     <span>•</span>
@@ -489,7 +494,7 @@ export default function AdminDashboard() {
                           <SelectContent>
                             {internships.map((internship) => (
                               <SelectItem key={internship.id} value={internship.id.toString()}>
-                                {internship.title}
+                                {internship.title} - {internship.companyName}
                               </SelectItem>
                             ))}
                           </SelectContent>

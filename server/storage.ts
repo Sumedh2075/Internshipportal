@@ -95,7 +95,7 @@ export class SqliteStorage implements IStorage {
 
   async getInternships(): Promise<(Internship & { companyName?: string })[]> {
     return db.prepare(`
-      SELECT i.*, COALESCE(u.name, u.username) as companyName 
+      SELECT i.*, u.username as companyName 
       FROM internships i
       LEFT JOIN users u ON i.companyId = u.id
     `).all() as (Internship & { companyName?: string })[];
@@ -103,7 +103,7 @@ export class SqliteStorage implements IStorage {
 
   async getInternshipsByCompany(companyId: number): Promise<(Internship & { companyName?: string })[]> {
     return db.prepare(`
-      SELECT i.*, COALESCE(u.name, u.username) as companyName 
+      SELECT i.*, u.username as companyName 
       FROM internships i
       LEFT JOIN users u ON i.companyId = u.id
       WHERE i.companyId = ?
@@ -112,7 +112,7 @@ export class SqliteStorage implements IStorage {
 
   async getInternship(id: number): Promise<(Internship & { companyName?: string }) | undefined> {
     return db.prepare(`
-      SELECT i.*, COALESCE(u.name, u.username) as companyName 
+      SELECT i.*, u.username as companyName 
       FROM internships i
       LEFT JOIN users u ON i.companyId = u.id
       WHERE i.id = ?
