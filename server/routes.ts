@@ -201,16 +201,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/admin/applications/export", checkRole("admin"), async (req, res) => {
     const applications = await storage.getAllApplications();
-    const xlsx = require('xlsx');
 
-    const workbook = xlsx.utils.book_new();
-    const worksheet = xlsx.utils.json_to_sheet(applications);
-    xlsx.utils.book_append_sheet(workbook, worksheet, 'Applications');
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(applications);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Applications');
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename=applications.xlsx');
 
-    const buffer = xlsx.write(workbook, { type: 'buffer' });
+    const buffer = XLSX.write(workbook, { type: 'buffer' });
     res.send(buffer);
   });
 
