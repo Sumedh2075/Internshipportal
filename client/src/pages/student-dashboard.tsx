@@ -3,6 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Redirect } from "wouter";
 import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,8 @@ interface Internship {
   location: string;
   startDate: string;
   endDate: string;
+  companyId: number;
+  companyName?: string;
 }
 
 interface Application {
@@ -117,6 +120,7 @@ export default function StudentDashboard() {
                               {internship.description}
                             </p>
                             <div className="mt-2 space-y-1 text-sm">
+                              <p>Company: {internship.companyName || "Unknown Company"}</p>
                               <p>Location: {internship.location}</p>
                               <p>Start: {new Date(internship.startDate).toLocaleDateString()}</p>
                               <p>End: {new Date(internship.endDate).toLocaleDateString()}</p>
@@ -191,31 +195,47 @@ export default function StudentDashboard() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {applications.map((application) => (
-                    <Card key={application.id}>
-                      <CardContent className="pt-6">
-                        <h3 className="font-semibold">
-                          Application #{application.id}
-                        </h3>
-                        <p className="text-sm text-muted-foreground mt-2">
-                          Status: {application.status}
-                        </p>
-                        <p className="text-sm">
-                          Applied: {new Date(application.appliedAt).toLocaleDateString()}
-                        </p>
-                        <p className="text-sm">
-                          <a
-                            href={application.resumeUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline"
-                          >
-                            View Resume
-                          </a>
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
+                  {applications.map((application) => {
+                    // Find the associated internship
+                    const internship = internships.find(i => i.id === application.internshipId);
+                    
+                    return (
+                      <Card key={application.id}>
+                        <CardContent className="pt-6">
+                          <h3 className="font-semibold">
+                            {internship ? internship.title : `Application #${application.id}`}
+                          </h3>
+                          <p className="text-sm text-muted-foreground mt-2">
+                            <Badge className={
+                              application.status === 'pending' ? 'bg-yellow-500' : 
+                              application.status === 'accepted' ? 'bg-green-500' : 
+                              'bg-red-500'
+                            }>
+                              {application.status}
+                            </Badge>
+                          </p>
+                          {internship && (
+                            <p className="text-sm mt-1">
+                              Company: {internship.companyName || "Unknown"}
+                            </p>
+                          )}
+                          <p className="text-sm">
+                            Applied: {new Date(application.appliedAt).toLocaleDateString()}
+                          </p>
+                          <p className="text-sm">
+                            <a
+                              href={application.resumeUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline"
+                            >
+                              View Resume
+                            </a>
+                          </p>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               )}
             </CardContent>

@@ -65,14 +65,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/internships/:id", checkRole("company"), async (req, res) => {
     if (!req.user) return res.sendStatus(401);
     try {
+      // Get the internship to verify ownership
+      const internshipId = parseInt(req.params.id);
+      const internship = await storage.getInternship(internshipId);
+      
+      if (!internship) {
+        return res.status(404).json({ message: "Internship not found" });
+      }
+      
+      // Check if the current user is the owner of this internship
+      if (internship.companyId !== req.user.id) {
+        return res.status(403).json({ message: "You don't have permission to edit this internship" });
+      }
+      
       const data = req.body;
       // Format dates if they exist in the update
       const formattedData: any = { ...data };
       
       // We're already using string dates in SQLite
       
-      const internship = await storage.updateInternship(parseInt(req.params.id), formattedData);
-      res.json(internship);
+      const updatedInternship = await storage.updateInternship(internshipId, formattedData);
+      res.json(updatedInternship);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
@@ -81,7 +94,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/internships/:id", checkRole("company"), async (req, res) => {
     if (!req.user) return res.sendStatus(401);
     try {
-      await storage.deleteInternship(parseInt(req.params.id));
+      // Get the internship to verify ownership
+      const internshipId = parseInt(req.params.id);
+      const internship = await storage.getInternship(internshipId);
+      
+      if (!internship) {
+        return res.status(404).json({ message: "Internship not found" });
+      }
+      
+      // Check if the current user is the owner of this internship
+      if (internship.companyId !== req.user.id) {
+        return res.status(403).json({ message: "You don't have permission to delete this internship" });
+      }
+      
+      await storage.deleteInternship(internshipId);
       res.sendStatus(204);
     } catch (error: any) {
       res.status(400).json({ message: error.message });

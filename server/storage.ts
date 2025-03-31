@@ -93,16 +93,25 @@ export class SqliteStorage implements IStorage {
     return result;
   }
 
-  async getInternships(): Promise<Internship[]> {
-    return db.prepare("SELECT * FROM internships").all() as Internship[];
+  async getInternships(): Promise<(Internship & { companyName?: string })[]> {
+    return db.prepare(`
+      SELECT i.*, u.name as companyName 
+      FROM internships i
+      LEFT JOIN users u ON i.companyId = u.id
+    `).all() as (Internship & { companyName?: string })[];
   }
 
   async getInternshipsByCompany(companyId: number): Promise<Internship[]> {
     return db.prepare("SELECT * FROM internships WHERE companyId = ?").all(companyId) as Internship[];
   }
 
-  async getInternship(id: number): Promise<Internship | undefined> {
-    return db.prepare("SELECT * FROM internships WHERE id = ?").get(id) as Internship | undefined;
+  async getInternship(id: number): Promise<(Internship & { companyName?: string }) | undefined> {
+    return db.prepare(`
+      SELECT i.*, u.name as companyName 
+      FROM internships i
+      LEFT JOIN users u ON i.companyId = u.id
+      WHERE i.id = ?
+    `).get(id) as (Internship & { companyName?: string }) | undefined;
   }
 
   async createApplication(data: Omit<Application, "id" | "appliedAt" | "status">): Promise<Application> {

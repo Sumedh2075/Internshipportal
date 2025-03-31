@@ -24,6 +24,8 @@ interface Internship {
   requirements: string;
   startDate: string;
   endDate: string;
+  companyId: number;
+  companyName?: string;
 }
 
 interface Application {
@@ -101,20 +103,50 @@ export default function CompanyDashboard() {
   const updateInternshipMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
       const res = await apiRequest("PATCH", `/api/internships/${id}`, data);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to update internship");
+      }
       return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/internships/company"] });
+      toast({
+        title: "Success",
+        description: "Internship updated successfully"
+      });
     },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update internship",
+        variant: "destructive"
+      });
+    }
   });
 
   const deleteInternshipMutation = useMutation({
     mutationFn: async (id: number) => {
-      await apiRequest("DELETE", `/api/internships/${id}`);
+      const res = await apiRequest("DELETE", `/api/internships/${id}`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to delete internship");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/internships/company"] });
+      toast({
+        title: "Success",
+        description: "Internship deleted successfully"
+      });
     },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete internship",
+        variant: "destructive"
+      });
+    }
   });
 
   const updateApplicationMutation = useMutation({
