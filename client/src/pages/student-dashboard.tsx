@@ -29,6 +29,7 @@ interface Application {
   status: string;
   appliedAt: string;
   resumeUrl: string;
+  internshipTitle?: string;
 }
 
 export default function StudentDashboard() {
@@ -203,7 +204,7 @@ export default function StudentDashboard() {
                       <Card key={application.id}>
                         <CardContent className="pt-6">
                           <h3 className="font-semibold">
-                            {internship ? internship.title : `Application #${application.id}`}
+                            {application.internshipTitle || internship?.title || `Application #${application.id}`}
                           </h3>
                           <p className="text-sm text-muted-foreground mt-2">
                             <Badge className={

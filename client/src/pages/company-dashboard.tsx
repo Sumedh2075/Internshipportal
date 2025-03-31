@@ -33,6 +33,7 @@ interface Application {
   studentId: string;
   status: string;
   resumeUrl: string;
+  studentName?: string;
 }
 
 export default function CompanyDashboard() {
@@ -480,7 +481,7 @@ export default function CompanyDashboard() {
               <Card key={application.id}>
                 <CardContent className="flex items-center justify-between p-4">
                   <div>
-                    <h3 className="font-semibold">Student ID: {application.studentId}</h3>
+                    <h3 className="font-semibold">Student: {application.studentName || `ID: ${application.studentId}`}</h3>
                     <p className="text-sm text-muted-foreground">Resume: <a href={application.resumeUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">View Resume</a></p>
                     <p className="text-sm text-muted-foreground">Status: {application.status}</p>
                   </div>

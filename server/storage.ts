@@ -14,8 +14,8 @@ interface IStorage {
   getInternshipsByCompany(companyId: number): Promise<Internship[]>;
   getInternship(id: number): Promise<Internship | undefined>;
   createApplication(data: Omit<Application, "id" | "appliedAt" | "status">): Promise<Application>;
-  getApplicationsByStudent(studentId: number): Promise<Application[]>;
-  getApplicationsByInternship(internshipId: number): Promise<Application[]>;
+  getApplicationsByStudent(studentId: number): Promise<(Application & { internshipTitle?: string })[]>;
+  getApplicationsByInternship(internshipId: number): Promise<(Application & { studentName?: string })[]>;
   updateApplicationStatus(id: number, status: "accepted" | "rejected"): Promise<Application>;
   updateUserPassword(id: number, hashedPassword: string): Promise<User>;
   updateInternship(id: number, data: Partial<Omit<Internship, "id">>): Promise<Internship>;
@@ -23,7 +23,7 @@ interface IStorage {
   getAllUsers(): Promise<User[]>;
   deleteUser(id: number): Promise<void>;
   updateUser(id: number, data: Partial<User>): Promise<User | undefined>;
-  getAllApplications(): Promise<Application[]>;
+  getAllApplications(): Promise<(Application & { internshipTitle?: string, studentName?: string })[]>;
 };
 
 const MemoryStore = createMemoryStore(session);
@@ -126,12 +126,22 @@ export class SqliteStorage implements IStorage {
     return result;
   }
 
-  async getApplicationsByStudent(studentId: number): Promise<Application[]> {
-    return db.prepare("SELECT * FROM applications WHERE studentId = ?").all(studentId) as Application[];
+  async getApplicationsByStudent(studentId: number): Promise<(Application & { internshipTitle?: string })[]> {
+    return db.prepare(`
+      SELECT a.*, i.title as internshipTitle
+      FROM applications a
+      LEFT JOIN internships i ON a.internshipId = i.id
+      WHERE a.studentId = ?
+    `).all(studentId) as (Application & { internshipTitle?: string })[];
   }
 
-  async getApplicationsByInternship(internshipId: number): Promise<Application[]> {
-    return db.prepare("SELECT * FROM applications WHERE internshipId = ?").all(internshipId) as Application[];
+  async getApplicationsByInternship(internshipId: number): Promise<(Application & { studentName?: string })[]> {
+    return db.prepare(`
+      SELECT a.*, u.username as studentName
+      FROM applications a
+      LEFT JOIN users u ON a.studentId = u.id
+      WHERE a.internshipId = ?
+    `).all(internshipId) as (Application & { studentName?: string })[];
   }
 
   async updateApplicationStatus(id: number, status: "accepted" | "rejected"): Promise<Application> {
@@ -177,8 +187,13 @@ export class SqliteStorage implements IStorage {
   }
 
 
-  async getAllApplications(): Promise<Application[]> {
-    return db.prepare("SELECT * FROM applications").all() as Application[];
+  async getAllApplications(): Promise<(Application & { internshipTitle?: string, studentName?: string })[]> {
+    return db.prepare(`
+      SELECT a.*, i.title as internshipTitle, u.username as studentName
+      FROM applications a
+      LEFT JOIN internships i ON a.internshipId = i.id
+      LEFT JOIN users u ON a.studentId = u.id
+    `).all() as (Application & { internshipTitle?: string, studentName?: string })[];
   }
 }
 

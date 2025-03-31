@@ -48,6 +48,8 @@ interface Application {
   status: string;
   resumeUrl: string;
   appliedAt?: string;
+  internshipTitle?: string;
+  studentName?: string;
 }
 
 export default function AdminDashboard() {
@@ -516,20 +518,16 @@ export default function AdminDashboard() {
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                       <div>
                                         <h3 className="font-medium text-slate-800">
-                                          {internship ? (
-                                            <span>
-                                              Application for: <span className="font-semibold">{internship.title}</span>
-                                            </span>
-                                          ) : (
-                                            <span>Internship ID: {application.internshipId}</span>
-                                          )}
+                                          <span>
+                                            Application for: <span className="font-semibold">{application.internshipTitle || internship?.title || `Internship ID: ${application.internshipId}`}</span>
+                                          </span>
                                         </h3>
                                         <div className="text-sm mt-1 text-slate-500">
-                                          By: <span className="font-medium">{student?.username || `Student ID: ${application.studentId}`}</span>
+                                          By: <span className="font-medium">{application.studentName || student?.username || `Student ID: ${application.studentId}`}</span>
                                         </div>
-                                        {internship && (
+                                        {(internship || application.internshipTitle) && (
                                           <div className="text-sm mt-1 text-slate-500">
-                                            Company: <span className="font-medium">{internship.companyName}</span>
+                                            Company: <span className="font-medium">{internship?.companyName || "Unknown"}</span>
                                           </div>
                                         )}
                                       </div>
@@ -615,7 +613,7 @@ export default function AdminDashboard() {
                                                   ? "bg-emerald-500" 
                                                   : "bg-rose-500"
                                             }`}></div>
-                                            <h3 className="font-medium text-slate-800">Student ID: {application.studentId}</h3>
+                                            <h3 className="font-medium text-slate-800">Student: {application.studentName || `ID: ${application.studentId}`}</h3>
                                           </div>
                                           <div className="space-y-1">
                                             <p className="text-sm text-slate-500 flex items-center gap-2">

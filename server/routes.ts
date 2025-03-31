@@ -201,9 +201,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/admin/applications/export", checkRole("admin"), async (req, res) => {
     const applications = await storage.getAllApplications();
+    
+    // Format the data to make it more readable in Excel
+    const formattedApplications = applications.map(app => ({
+      id: app.id,
+      studentId: app.studentId,
+      studentName: app.studentName || 'Unknown',
+      internshipId: app.internshipId,
+      internshipTitle: app.internshipTitle || 'Unknown',
+      status: app.status,
+      appliedAt: app.appliedAt,
+      resumeUrl: app.resumeUrl
+    }));
 
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(applications);
+    const worksheet = XLSX.utils.json_to_sheet(formattedApplications);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Applications');
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
